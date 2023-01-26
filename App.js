@@ -1,11 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, Image, Platform } from "react-native";
+import { StatusBar } from "react-native";
+import { Colors } from "./src/Assets/Colors/Colors";
+
+import StackNav from "./src/Navigation/StackNav";
+import UploadPost_Screen from "./src/Screens/UploadPost/UploadPost_Screen";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <StackNav />
+      <StatusBar backgroundColor={Colors.primaryColor500} />
     </View>
   );
 }
@@ -13,8 +17,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    marginHorizontal: Platform.OS === "web" ? 450: 0,
+    marginVertical: Platform.OS === "web" ? 10 : 0,
   },
 });
