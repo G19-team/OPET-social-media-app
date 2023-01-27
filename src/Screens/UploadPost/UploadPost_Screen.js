@@ -6,10 +6,11 @@ import {
   ScrollView,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 //hooks
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 //style for this docuument.
 import { styles } from "./Style";
@@ -36,7 +37,7 @@ import { moderateScale } from "react-native-size-matters";
 
 const UploadPost_Screen = ({ navigation }) => {
   //if user select image, then information or properties(URL,name,type) will be stored in image useState variable.
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
 
   //if user select any file, then information or properties(URL,name,type) will be stored in file useState variable.
   const [fileResult, setFileResult] = useState(null);
@@ -45,36 +46,87 @@ const UploadPost_Screen = ({ navigation }) => {
   const [caption, setCaption] = useState(null);
 
   //creating reference for firebase storage.
+  const [filename, setFileName] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [progress, setProgress] = useState(0);
 
   //dbUpload is an utility function, which upload image,file or video to firebase storage.
   const dbUpload = async (image, caption) => {
     if (!image || !caption) {
-      Alert.alert("are you mad or what!");
+      Alert.alert("Warning!!", "You have to give both file and caption");
       return 0;
     }
-    const file_name = image.substring(image.lastIndexOf("/") + 1);
-    console.log(file_name);
 
     //convert any file to blob file code is below.
     let result = await fetch(image);
     const blobImage = await result.blob();
 
+    //extractiong file name from the url.
+    setFileName(image.substring(image.lastIndexOf("/") + 1));
+
     const metadata = { contentType: " image/png" };
 
     //upload files to firebase code is below.
-    const storageRef = ref(storage, "post/");
-    const docRef = ref(storageRef, file_name);
-    const uploadTask = uploadBytesResumable(docRef, blobImage, metadata);
-    const imageURL = getDownloadURL(uploadTask.snapshot.ref).then(
-      (downloadURL) => {
-        const docRef = addDoc(collection(db, "post"), {
-          imageURL: downloadURL,
-          caption: caption,
-        }).then(() => {
-          Alert.alert("your file is uploaded");
-          navigation.navigate("Home_Screen");
-          setImage(null);
-          setCaption(null);
+    const storageRef = ref(storage, "post/" + filename);
+    setIsLoading(true);
+    const uploadTask = uploadBytesResumable(storageRef, blobImage, metadata);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        if ((snapshot.bytesTransferred / snapshot.totalBytes) * 100 == 100) {
+          setIsLoading(false);
+          Alert.alert(
+            "Successfully completed",
+            "your file :" + filename + " is successfully uploaded",
+            [
+              {
+                text: "ok",
+                onPress: () => navigation.navigate("Home_Screen"),
+                style: "cancel",
+              },
+            ]
+          );
+        }
+        console.log(
+          "Upload is " +
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100 +
+            "% done"
+        );
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        Alert.alert(
+          "Failed to upload",
+          "uploading task generated an error beacuse of some reasone"
+        );
+      },
+      () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          const docRef = addDoc(collection(db, "post"), {
+            imageURL: downloadURL,
+            caption: caption,
+            likes: [],
+            dislikes: [],
+            comments: [],
+          }).then(() => {
+            setImage(null);
+            setCaption(null);
+          });
         });
       }
     );
@@ -108,6 +160,7 @@ const UploadPost_Screen = ({ navigation }) => {
       if (!result?.canceled) {
         setImage(result.assets[0].uri);
         console.log(result.assets[0].uri);
+        console.log(filename);
       }
     });
   };
@@ -124,7 +177,21 @@ const UploadPost_Screen = ({ navigation }) => {
     });
   };
 
-  return (
+  return isLoading ? (
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+      }}
+    >
+      <Text>
+        uplaoding done: {progress}% {"\t"}
+      </Text>
+      <ActivityIndicator size="large" color={Colors.primaryColor200} />
+    </View>
+  ) : (
     <ScrollView style={styles.container}>
       <Text style={styles.subheading}>Preview :</Text>
       <View

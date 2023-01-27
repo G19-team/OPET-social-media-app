@@ -57,7 +57,6 @@ export const styles = StyleSheet.create({
     borderRadius: moderateScale(10),
     paddingHorizontal: moderateScale(10),
     paddingVertical: moderateVerticalScale(3),
-    // backgroundColor:"blue"
     
   },
   btn:{
