@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   inputcontainer: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f9f9f9",
     elevation: 5,
     borderRadius: moderateScale(13),
     marginVertical: moderateScale(5),
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f9f9f9",
     fontSize: scale(17),
     flex: 1,
   },

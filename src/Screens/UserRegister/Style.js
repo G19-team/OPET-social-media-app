@@ -11,6 +11,7 @@ import {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#ffffff"
   },
   center: {
     justifyContent: "center",
@@ -48,5 +49,19 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  btn: {
+    borderRadius: moderateScale(20),
+    marginHorizontal: moderateVerticalScale(30),
+    marginVertical: moderateVerticalScale(15),
+    paddingVertical: moderateVerticalScale(10),
+    backgroundColor: Colors.primaryColor500,
+    borderWidth: 0,
+    elevation: 5,
+  },
+  fontstyle: {
+    fontSize: scale(16),
+    fontWeight: "800",
+    color: "#ffffff",
   },
 });

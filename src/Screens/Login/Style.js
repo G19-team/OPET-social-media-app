@@ -10,18 +10,14 @@ import { Colors } from "../../Assets/Colors/Colors";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#ffffff",
+    justifyContent: "space-between",
   },
-  topleftimg: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  innercontainer: {
-    marginTop: moderateScale(100),
-  },
+
   top: {
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: moderateScale(3),
   },
   heading: {
     fontSize: scale(30),
@@ -30,11 +26,12 @@ export const styles = StyleSheet.create({
   },
   lblinput: {
     marginHorizontal: moderateScale(30),
+    marginVertical: moderateScale(3),
   },
   btn: {
     borderRadius: moderateScale(20),
     marginHorizontal: moderateVerticalScale(30),
-    marginVertical: moderateVerticalScale(20),
+    marginVertical: moderateVerticalScale(15),
     paddingVertical: moderateVerticalScale(10),
     backgroundColor: Colors.primaryColor500,
     borderWidth: 0,
@@ -46,9 +43,7 @@ export const styles = StyleSheet.create({
     color: "#ffffff",
   },
   bottomimg: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
+    width: "100%",
     zIndex: -1,
   },
 });

@@ -95,15 +95,15 @@ const Post = ({ data }) => {
       <View style={styles.postfooter}>
         <View style={styles.postoptions}>
           <TouchableOpacity style={styles.options}>
-            <Text>{data.likes.length} likes</Text>
+            <Text>{data.likes} likes</Text>
             <Ionicons name="thumbs-up-outline" size={moderateScale(25)} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.options}>
-            <Text>{data.dislikes.length} dislikes</Text>
+            <Text>{data.dislikes} dislikes</Text>
             <Ionicons name="thumbs-down-outline" size={moderateScale(25)} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.options}>
-            <Text>{data.comments.length} comment</Text>
+            <Text>{data.comments} comment</Text>
             <Ionicons name="chatbox-outline" size={moderateScale(25)} />
           </TouchableOpacity>
         </View>

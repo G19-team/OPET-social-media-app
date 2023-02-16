@@ -120,9 +120,9 @@ const UploadPost_Screen = ({ navigation }) => {
           const docRef = addDoc(collection(db, "post"), {
             imageURL: downloadURL,
             caption: caption,
-            likes: [],
-            dislikes: [],
-            comments: [],
+            likes: [""],
+            dislikes: [""],
+            comments: [""],
           }).then(() => {
             setImage(null);
             setCaption(null);
