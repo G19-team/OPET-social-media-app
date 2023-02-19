@@ -82,7 +82,7 @@ const UploadPost_Screen = ({ navigation }) => {
           setIsLoading(false);
           Alert.alert(
             "Successfully completed",
-            "your file :" + filename + " is successfully uploaded",
+            "your file is successfully uploaded",
             [
               {
                 text: "ok",
@@ -187,7 +187,7 @@ const UploadPost_Screen = ({ navigation }) => {
       }}
     >
       <Text>
-        uplaoding done: {progress}% {"\t"}
+        uplaoding done: {desimal.toFixed(progress)}% {"\t"}
       </Text>
       <ActivityIndicator size="large" color={Colors.primaryColor200} />
     </View>

@@ -3,6 +3,7 @@ import Start_Screen from "../Screens/StartScreen/Start_Screen";
 import LogIn_Screen from "../Screens/Login/LogIn_Screen";
 import UserRegister_Screen from "../Screens/UserRegister/UserRegister_Screen";
 import OrganizationRegister_Screen from "../Screens/OrganizationRegister/OrganizationRegister_Screen";
+import EditProfilePage from "../Components/EditProfile";
 import HomeNav from "./HomeNav";
 
 //libraries for navigation.
@@ -41,6 +42,11 @@ const StackNav = () => {
         <Stack.Screen
           name={"HomeNav"}
           component={HomeNav}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={"EditProfilePage"}
+          component={EditProfilePage}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
