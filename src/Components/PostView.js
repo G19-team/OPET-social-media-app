@@ -29,6 +29,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 
 import { Colors } from "../Assets/Colors/Colors";
+import DocumentView from "./DocumentView";
 
 const PostView = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -56,20 +57,24 @@ const PostView = () => {
   ) : (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
+      
         data={data}
         renderItem={({ item }) => <Post data={item.data} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        inverted
         ListHeaderComponent={
-          <Text
-            style={{
-              fontSize: scale(20),
-              paddingHorizontal: 10,
-              fontWeight: "bold",
-            }}
-          >
-            Post :
-          </Text>
+          <View>
+            <Text
+              style={{
+                fontSize: scale(20),
+                paddingHorizontal: 10,
+                fontWeight: "bold",
+              }}
+            >
+              Post :
+            </Text>
+          </View>
         }
       />
     </View>
@@ -83,14 +88,22 @@ const Post = ({ data }) => {
     <View style={styles.post}>
       <View style={styles.postheader}>
         <View style={styles.profilepicture}></View>
-        <Text style={styles.name}>Name</Text>
+        <Text style={styles.name}>{data.username}</Text>
       </View>
       <View style={styles.postcontent}>
-        <FitImage
-          source={{ uri: data.imageURL }}
-          resizeMode="cover"
-          style={styles.postcontent}
-        />
+        {data.fileType === "image" ? (
+          <FitImage
+            source={{ uri: data.URL }}
+            resizeMode="cover"
+            style={styles.postcontent}
+          />
+        ) : (
+          <DocumentView
+            type={data.fileType}
+            name={data.fileName}
+            size={1.121212}
+          />
+        )}
       </View>
       <View style={styles.postfooter}>
         <View style={styles.postoptions}>
@@ -125,7 +138,7 @@ const styles = StyleSheet.create({
     margin: moderateVerticalScale(10),
     borderRadius: moderateScale(20),
     borderWidth: 1,
-    backgroundColor: "#E9E9E9",
+    backgroundColor: "#f0f0f0",
   },
   postheader: {
     flexDirection: "row",
@@ -145,8 +158,8 @@ const styles = StyleSheet.create({
   },
   postcontent: {
     // paddingVertical: moderateVerticalScale(3),
-    borderRadius:3,
-    overflow:"hidden"
+    borderRadius: 3,
+    overflow: "hidden",
   },
   postfooter: {
     paddingHorizontal: moderateScale(25),

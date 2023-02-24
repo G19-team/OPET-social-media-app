@@ -54,9 +54,8 @@ export default DocumentView;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#89c2d9",
-    width: "100%",
     borderRadius: moderateScale(10),
-    padding: moderateVerticalScale(5),
+    marginHorizontal: moderateScale(5),
   },
   header: {
     flexDirection: "row",

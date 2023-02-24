@@ -18,7 +18,7 @@ import { styles } from "./Style";
 //importing database related libarary.
 import { db, storage } from "../../db/firebaseConfig";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore";
+import { setDoc, doc, setLogLevel } from "firebase/firestore";
 
 //image and document picker library.
 import * as ImagePicker from "expo-image-picker";
@@ -37,7 +37,7 @@ import { moderateScale } from "react-native-size-matters";
 
 const UploadPost_Screen = ({ navigation }) => {
   //if user select image, then information or properties(URL,name,type) will be stored in image useState variable.
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
 
   //if user select any file, then information or properties(URL,name,type) will be stored in file useState variable.
   const [fileResult, setFileResult] = useState(null);
@@ -45,33 +45,29 @@ const UploadPost_Screen = ({ navigation }) => {
   //caption of the post will be stored in caption useState variable.
   const [caption, setCaption] = useState(null);
 
-  //creating reference for firebase storage.
-  const [filename, setFileName] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
 
   const [progress, setProgress] = useState(0);
 
   //dbUpload is an utility function, which upload image,file or video to firebase storage.
-  const dbUpload = async (image, caption) => {
-    if (!image || !caption) {
+  const dbUpload = async (file, caption, fileType, fileName) => {
+    console.log(file);
+    if (!file || !caption) {
       Alert.alert("Warning!!", "You have to give both file and caption");
       return 0;
     }
 
     //convert any file to blob file code is below.
-    let result = await fetch(image);
-    const blobImage = await result.blob();
+    let result = await fetch(file).catch((er) => console.log(er));
+    const blobFile = await result.blob();
 
-    //extractiong file name from the url.
-    setFileName(image.substring(image.lastIndexOf("/") + 1));
-
-    const metadata = { contentType: " image/png" };
+    // const metadata = { contentType: " image/png" };
 
     //upload files to firebase code is below.
-    const storageRef = ref(storage, "post/" + filename);
+    const storageRef = ref(storage, "post/" + fileName);
+   
     setIsLoading(true);
-    const uploadTask = uploadBytesResumable(storageRef, blobImage, metadata);
+    const uploadTask = uploadBytesResumable(storageRef, blobFile);
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -112,19 +108,28 @@ const UploadPost_Screen = ({ navigation }) => {
           "Failed to upload",
           "uploading task generated an error beacuse of some reasone"
         );
+        setIsLoading(false);
+        setImage(null);
+        setFileResult(null);
+        setCaption(null);
       },
       () => {
         // Handle successful uploads on complete
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          const docRef = addDoc(collection(db, "post"), {
-            imageURL: downloadURL,
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          const docRef = await setDoc(doc(db, "post", Date.now().toString()), {
+            URL: downloadURL,
+            fileType: fileType,
+            fileName: fileName,
+            username: "krish",
+            userId: 206090307083,
             caption: caption,
             likes: [""],
             dislikes: [""],
             comments: [""],
           }).then(() => {
             setImage(null);
+            setFileResult(null);
             setCaption(null);
           });
         });
@@ -137,9 +142,9 @@ const UploadPost_Screen = ({ navigation }) => {
     let result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
       type: [
-        "application/pdf" /*pdf*/,
-        "application/msword" /*doc*/,
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" /*docs*/,
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       ],
     })
       .then((result) => {
@@ -158,9 +163,8 @@ const UploadPost_Screen = ({ navigation }) => {
       allowsEditing: true,
     }).then((result) => {
       if (!result?.canceled) {
-        setImage(result.assets[0].uri);
-        console.log(result.assets[0].uri);
-        console.log(filename);
+        setImage(result.assets[0]);
+        console.log(result.assets[0]);
       }
     });
   };
@@ -172,9 +176,24 @@ const UploadPost_Screen = ({ navigation }) => {
       allowsEditing: true,
     }).then((result) => {
       if (!result?.canceled) {
-        setImage(result.assets[0].uri);
+        setFileResult(result.assets[0].uri);
       }
     });
+  };
+
+  const checkFileType = (image, fileResult) => {
+    if (image) {
+      dbUpload(
+        image.uri,
+        caption,
+        image.type,
+        image.uri.substring(image.uri.lastIndexOf("/") + 1)
+      );
+    } else if (fileResult) {
+      dbUpload(fileResult.uri, caption, "document", fileResult.name);
+    } else {
+      console.log("confusion");
+    }
   };
 
   return isLoading ? (
@@ -184,10 +203,11 @@ const UploadPost_Screen = ({ navigation }) => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row",
+        backgroundColor: "#ffffff",
       }}
     >
       <Text>
-        uplaoding done: {desimal.toFixed(progress)}% {"\t"}
+        uplaoding done: {progress.toFixed()}% {"\t"}
       </Text>
       <ActivityIndicator size="large" color={Colors.primaryColor200} />
     </View>
@@ -206,7 +226,7 @@ const UploadPost_Screen = ({ navigation }) => {
       >
         {/*if user select image then image will be displayed as preview otherwise file.*/}
         {image ? (
-          <FitImage source={{ uri: image }} resizeMode="cover" />
+          <FitImage source={{ uri: image.uri }} resizeMode="cover" />
         ) : fileResult ? (
           <DocumentView
             type={fileResult.mimeType}
@@ -218,7 +238,7 @@ const UploadPost_Screen = ({ navigation }) => {
         )}
       </View>
 
-      {/* if image or file is selected then dont need to display options */}
+      {/* if image or file is selected then don't need to display options */}
       {!image && !fileResult && (
         <>
           <Text style={styles.subheading}>
@@ -291,7 +311,7 @@ const UploadPost_Screen = ({ navigation }) => {
         iconColor={Colors.primaryColor10}
         style={styles.btn}
         fontStyle={styles.fontstyle}
-        onPress={() => dbUpload(image, caption)}
+        onPress={() => checkFileType(image, fileResult)}
       />
 
       {(image || fileResult) && (
