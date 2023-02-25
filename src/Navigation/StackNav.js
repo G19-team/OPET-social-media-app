@@ -3,7 +3,8 @@ import Start_Screen from "../Screens/StartScreen/Start_Screen";
 import LogIn_Screen from "../Screens/Login/LogIn_Screen";
 import UserRegister_Screen from "../Screens/UserRegister/UserRegister_Screen";
 import OrganizationRegister_Screen from "../Screens/OrganizationRegister/OrganizationRegister_Screen";
-import EditProfilePage from "../Components/EditProfile";
+import EditProfile_Screen from "../Screens/EditProfle/EditProfile_screen";
+import DocumentViewer_Screen from "../Screens/DocumentVIewer/DocumentViewer_Screen"
 import HomeNav from "./HomeNav";
 
 //libraries for navigation.
@@ -40,13 +41,18 @@ const StackNav = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name={"HomeNav"}
-          component={HomeNav}
-          options={{ headerShown: false }}
+          name={"EditProfile_Screen"}
+          component={EditProfile_Screen}
+          options={{ headerShown: true }}
         />
         <Stack.Screen
-          name={"EditProfilePage"}
-          component={EditProfilePage}
+          name={"DocumentViewer_Screen"}
+          component={DocumentViewer_Screen}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name={"HomeNav"}
+          component={HomeNav}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

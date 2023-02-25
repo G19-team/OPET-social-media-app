@@ -34,6 +34,7 @@ import DocumentView from "../../Components/DocumentView";
 
 //responsiv library.
 import { moderateScale } from "react-native-size-matters";
+import alert from "../../Utills/alert";
 
 const UploadPost_Screen = ({ navigation }) => {
   //if user select image, then information or properties(URL,name,type) will be stored in image useState variable.
@@ -65,7 +66,7 @@ const UploadPost_Screen = ({ navigation }) => {
 
     //upload files to firebase code is below.
     const storageRef = ref(storage, "post/" + fileName);
-   
+
     setIsLoading(true);
     const uploadTask = uploadBytesResumable(storageRef, blobFile);
     uploadTask.on(
@@ -104,7 +105,11 @@ const UploadPost_Screen = ({ navigation }) => {
       },
       (error) => {
         // Handle unsuccessful uploads
-        Alert.alert(
+        // Alert.alert(
+        //   "Failed to upload",
+        //   "uploading task generated an error beacuse of some reasone"
+        // );
+        alert(
           "Failed to upload",
           "uploading task generated an error beacuse of some reasone"
         );

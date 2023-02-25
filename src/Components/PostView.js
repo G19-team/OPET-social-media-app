@@ -30,12 +30,14 @@ import { ActivityIndicator } from "react-native";
 
 import { Colors } from "../Assets/Colors/Colors";
 import DocumentView from "./DocumentView";
+import alert from "../Utills/alert";
+import { useNavigation } from "@react-navigation/native";
 
-const PostView = () => {
-  const [isLoading, setIsLoading] = useState(false);
+const PostView = ({navigation}) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
 
   useLayoutEffect(() => {
-    setIsLoading(true);
     const docRef = collection(db, "post");
     onSnapshot(docRef, (post) =>
       setData(
@@ -45,10 +47,10 @@ const PostView = () => {
         }))
       )
     );
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, []);
-
-  const [data, setData] = useState([]);
 
   return isLoading ? (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -57,13 +59,12 @@ const PostView = () => {
   ) : (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
-      
+        inverted
         data={data}
         renderItem={({ item }) => <Post data={item.data} />}
         keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        inverted
-        ListHeaderComponent={
+        showsFooterScrollIndicator={false}
+        ListFooterComponent={
           <View>
             <Text
               style={{
@@ -84,6 +85,7 @@ const PostView = () => {
 export default PostView;
 
 const Post = ({ data }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.post}>
       <View style={styles.postheader}>
@@ -98,11 +100,17 @@ const Post = ({ data }) => {
             style={styles.postcontent}
           />
         ) : (
-          <DocumentView
-            type={data.fileType}
-            name={data.fileName}
-            size={1.121212}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("DocumentViewer_Screen",{url:data.URL});
+            }}
+          >
+            <DocumentView
+              type={data.fileType}
+              name={data.fileName}
+              size={1.121212}
+            />
+          </TouchableOpacity>
         )}
       </View>
       <View style={styles.postfooter}>
@@ -137,8 +145,7 @@ const styles = StyleSheet.create({
   post: {
     margin: moderateVerticalScale(10),
     borderRadius: moderateScale(20),
-    borderWidth: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f8f8f8",
   },
   postheader: {
     flexDirection: "row",

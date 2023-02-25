@@ -9,7 +9,6 @@ const Stories = () => {
     
       <ScrollView
         style={{
-          flex: 1,
           maxHeight: 130,
           backgroundColor: "#ffffff",
         }}
