@@ -33,7 +33,7 @@ import DocumentView from "./DocumentView";
 import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 
-const PostView = ({navigation}) => {
+const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -41,10 +41,12 @@ const PostView = ({navigation}) => {
     const docRef = collection(db, "post");
     onSnapshot(docRef, (post) =>
       setData(
-        post.docs.map((post) => ({
-          id: post.id,
-          data: post.data(),
-        }))
+        post.docs
+          .map((post) => ({
+            id: post.id,
+            data: post.data(),
+          }))
+          .reverse()
       )
     );
     setTimeout(() => {
@@ -59,12 +61,11 @@ const PostView = ({navigation}) => {
   ) : (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
-        inverted
         data={data}
         renderItem={({ item }) => <Post data={item.data} />}
         keyExtractor={(item) => item.id}
         showsFooterScrollIndicator={false}
-        ListFooterComponent={
+        ListHeaderComponent={
           <View>
             <Text
               style={{
@@ -102,7 +103,7 @@ const Post = ({ data }) => {
         ) : (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("DocumentViewer_Screen",{url:data.URL});
+              navigation.navigate("DocumentViewer_Screen", { url: data.URL });
             }}
           >
             <DocumentView
