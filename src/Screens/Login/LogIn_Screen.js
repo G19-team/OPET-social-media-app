@@ -1,5 +1,5 @@
-import { Text, View, Image, TextInput, ScrollView } from "react-native";
-import React, { useState } from "react";
+import { Text, View, Image, TextInput, ScrollView, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 
 //responsiev library
 import {
@@ -17,7 +17,13 @@ import MyButton from "../../Components/MyButton";
 //for keyboard scroll
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+// it is the fb
+import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../../db/firebaseConfig";
+import alert from "../../Utills/alert";
 
+//libary used to store value , object in local storage of mobile.
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LogIn_Screen = ({ navigation }) => {
   const [logInDetails, setLogInDetails] = useState({
@@ -25,6 +31,37 @@ const LogIn_Screen = ({ navigation }) => {
     UserName: "",
     Password: "",
   });
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem("ordId", value).then((e) => console.log(e));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const login = () => {
+    signInWithEmailAndPassword(
+      auth,
+      logInDetails.UserName,
+      logInDetails.Password
+    )
+      .then((userCredential) => {
+        console.log(userCredential.user);
+        const user = userCredential.user;
+        storeData(logInDetails.organizationID);
+        navigation.replace("HomeNav");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log(errorMessage);
+        if (errorMessage === "Firebase: Error (auth/invalid-email).") {
+          alert("Validation!", "your email address is wrong");
+        } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
+          alert("Validation!", "your password is wrong");
+        }
+      });
+  };
 
   return (
     <>
@@ -48,18 +85,30 @@ const LogIn_Screen = ({ navigation }) => {
             lable="Organization ID :"
             iconName="briefcase-outline"
             outstyle={styles.lblinput}
-            require={true}
+            onChangeText={(data) =>
+              setLogInDetails({ ...logInDetails, organizationID: data })
+            }
+            keyboardType="number-pad"
+            require
           />
           <LbInputBox
             lable="User Name :"
             iconName="person-outline"
             outstyle={styles.lblinput}
+            onChangeText={(data) =>
+              setLogInDetails({ ...logInDetails, UserName: data })
+            }
+            require
           />
           <LbInputBox
             lable="Password :"
             iconName="lock-closed-outline"
             outstyle={styles.lblinput}
             secureTextEntry={true}
+            onChangeText={(data) =>
+              setLogInDetails({ ...logInDetails, Password: data })
+            }
+            require
           />
 
           <MyButton
@@ -67,7 +116,7 @@ const LogIn_Screen = ({ navigation }) => {
             style={styles.btn}
             fontStyle={styles.fontstyle}
             onPress={() => {
-              navigation.navigate("HomeNav");
+              login();
             }}
           />
 

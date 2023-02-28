@@ -9,8 +9,33 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MyButton from "../../Components/MyButton";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { db } from "../../db/firebaseConfig";
+import { setDoc, doc } from "firebase/firestore";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
+  const [orgname, setorgname] = useState(null);
+  const [orgemail, setorgemail] = useState(null);
+  const [orgconnum, setorgconnum] = useState(null);
+  const [orgadd, setorgadd] = useState(null);
+  const [orgabout, setorgabout] = useState(null);
+  const [orgusername, setorgusername] = useState(null);
+  const [orgpassword, setorgpassword] = useState(null);
+
+  const orgsavedata = async () => {
+    const docRef = await setDoc(
+      doc(db, "organization", (Math.random() * 100000).toFixed().toString()),
+      {
+        orgname: orgname,
+        orgemail: orgemail,
+        orgconnum: orgconnum,
+        orgadd: orgadd,
+        orgabout: orgabout,
+        orgusername: orgusername,
+        orgpassword: orgpassword,
+      }
+    ).then((e) => console.log(e));
+  };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.heading, styles.center]}>
@@ -24,27 +49,53 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         <MyButton title="choose picture" style={styles.picturebtn} />
       </View>
 
-      <LbInputBox lable="Organization Name :" outstyle={styles.lblinput} />
-      <LbInputBox lable="Organization E-mail :" outstyle={styles.lblinput} />
+      <LbInputBox
+        lable="Organization Name :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgname(text)}
+      />
+      <LbInputBox
+        lable="Organization E-mail :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgemail(text)}
+      />
       <LbInputBox
         lable="Organization Contact Number :"
         outstyle={styles.lblinput}
+        onChangeText={(text) => setorgconnum(text)}
       />
-      <LbInputBox lable="Address :" outstyle={styles.lblinput} />
-      <LbInputBox lable="About Organization :" outstyle={styles.lblinput} />
+      <LbInputBox
+        lable="Address :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgadd(text)}
+      />
+      <LbInputBox
+        lable="About Organization :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgabout(text)}
+      />
 
       <Text style={styles.info}>Enter Username and Password</Text>
-      <LbInputBox lable="Username :" outstyle={styles.lblinput} />
-      <LbInputBox lable="Password :" outstyle={styles.lblinput} />
+      <LbInputBox
+        lable="Username :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgusername(text)}
+      />
+      <LbInputBox
+        lable="Password :"
+        outstyle={styles.lblinput}
+        onChangeText={(text) => setorgpassword(text)}
+      />
 
       <MyButton
         title="Register"
         style={styles.btn}
         fontStyle={styles.fontstyle}
         onPress={() => {
-          console.log(details);
+          orgsavedata();
         }}
       />
+
       <MyButton
         title="Clear all"
         style={styles.btn}
