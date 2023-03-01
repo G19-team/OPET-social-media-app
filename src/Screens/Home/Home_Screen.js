@@ -24,11 +24,10 @@ const Home_Screen = () => {
     init();
   }, []);
   return (
-    <View style={{ flex: 1 }}>
-      <Stories />
+    <>
       <Text>{orgId}</Text>
       <PostView />
-    </View>
+    </>
   );
 };
 

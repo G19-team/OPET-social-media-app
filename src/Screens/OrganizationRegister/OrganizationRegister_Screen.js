@@ -11,6 +11,7 @@ import MyButton from "../../Components/MyButton";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { db } from "../../db/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
+import alert from "../../Utills/alert";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgname, setorgname] = useState(null);
@@ -22,18 +23,25 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgpassword, setorgpassword] = useState(null);
 
   const orgsavedata = async () => {
-    const docRef = await setDoc(
-      doc(db, "organization", (Math.random() * 100000).toFixed().toString()),
-      {
-        orgname: orgname,
-        orgemail: orgemail,
-        orgconnum: orgconnum,
-        orgadd: orgadd,
-        orgabout: orgabout,
-        orgusername: orgusername,
-        orgpassword: orgpassword,
-      }
-    ).then((e) => console.log(e));
+    const orgId = (Math.random() * 100000).toFixed().toString();
+    const docRef = await setDoc(doc(db, "organization", orgId), {
+      orgname: orgname,
+      orgemail: orgemail,
+      orgconnum: orgconnum,
+      orgadd: orgadd,
+      orgabout: orgabout,
+      orgusername: orgusername,
+      orgpassword: orgpassword,
+    })
+      .then(
+        alert(
+          "Successfully registered",
+          "your organization is registered in OPET " +
+            "your organization ID is : " +
+            orgId
+        )
+      )
+      .catch((e) => alert("registartion failed", "Something went wrong!" + e));
   };
 
   return (
@@ -80,6 +88,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         lable="Username :"
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgusername(text)}
+        value={orgemail}
       />
       <LbInputBox
         lable="Password :"

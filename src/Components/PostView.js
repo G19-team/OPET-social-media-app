@@ -25,6 +25,8 @@ import {
   scale,
 } from "react-native-size-matters";
 
+import * as OpenAnything from "react-native-openanything";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 
@@ -32,6 +34,7 @@ import { Colors } from "../Assets/Colors/Colors";
 import DocumentView from "./DocumentView";
 import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
+import Stories from "./Stories";
 
 const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,11 +54,17 @@ const PostView = ({ navigation }) => {
     );
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 500);
   }, []);
 
   return isLoading ? (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <ActivityIndicator size="large" color={Colors.primaryColor200} />
     </View>
   ) : (
@@ -67,6 +76,7 @@ const PostView = ({ navigation }) => {
         showsFooterScrollIndicator={false}
         ListHeaderComponent={
           <View>
+            <Stories />
             <Text
               style={{
                 fontSize: scale(20),
@@ -103,7 +113,8 @@ const Post = ({ data }) => {
         ) : (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("DocumentViewer_Screen", { url: data.URL });
+              OpenAnything.Pdf(data.URL);
+              // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
             }}
           >
             <DocumentView

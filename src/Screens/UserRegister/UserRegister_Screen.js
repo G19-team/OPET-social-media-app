@@ -157,6 +157,7 @@ const UserRegister_Screen = ({ navigation }) => {
           <LbInputBox
             lable="UserName :"
             onChangeText={(text) => setusername(text)}
+            value={email}
           />
           <LbInputBox
             lable="Password :"
