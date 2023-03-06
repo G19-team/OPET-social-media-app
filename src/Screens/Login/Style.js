@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   fontstyle: {
-    fontSize: scale(16),
+    fontSize: scale(15),
     fontWeight: "800",
     color: "#ffffff",
   },

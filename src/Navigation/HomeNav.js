@@ -8,7 +8,6 @@ import UploadPost_Screen from "../Screens/UploadPost/UploadPost_Screen";
 import EmployeeList_Screen from "../Screens/EmployeeList/EmployeeList_Screen";
 import Profile_Screen from "../Screens/Profile/Profile_Screen";
 
-
 //Icon library
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -37,7 +36,10 @@ const HomeNav = () => {
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primaryColor500} />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Colors.primaryColor500}
+      />
       <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: Colors.primaryColor50,
@@ -54,12 +56,12 @@ const HomeNav = () => {
           tabBarStyle: {
             height: moderateScale(50),
             elevation: 0,
-            borderTopWidth:1,
-            borderTopColor:"#252525",
+            borderTopWidth: 1,
+            borderTopColor: "#252525",
           },
           headerShadowVisible: false,
-        
         }}
+        sceneContainerStyle={{ backgroundColor: "#ffffff" }}
       >
         <Tab.Screen
           name="Home_Screen"

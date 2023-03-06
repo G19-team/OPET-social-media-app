@@ -11,17 +11,17 @@ import {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#ffffff"
+    backgroundColor: "#ffffff",
   },
   center: {
     justifyContent: "center",
     alignItems: "center",
   },
   heading: {
-    marginTop:moderateVerticalScale(30),
+    marginTop: moderateVerticalScale(30),
   },
   headingtext: {
-    fontSize: scale(30),
+    fontSize: scale(25),
     color: Colors.primaryColor500,
     fontWeight: "800",
   },
@@ -29,10 +29,11 @@ export const styles = StyleSheet.create({
     marginVertical: moderateVerticalScale(20),
   },
   picture: {
+    overflow: "hidden",
+    borderRadius: moderateScale(100),
     backgroundColor: Colors.primaryColor500,
-    height: moderateScale(100),
-    width: moderateScale(75),
-    borderRadius: moderateScale(20),
+    height: moderateScale(120),
+    width: moderateScale(120),
   },
   picturebtn: {
     marginVertical: moderateVerticalScale(10),
@@ -60,7 +61,7 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   fontstyle: {
-    fontSize: scale(16),
+    fontSize: scale(15),
     fontWeight: "800",
     color: "#ffffff",
   },

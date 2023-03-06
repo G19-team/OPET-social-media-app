@@ -10,6 +10,7 @@ import { Colors } from "../../Assets/Colors/Colors";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#ffffff"
     },
   btn: {
     elevation: 3,
@@ -22,7 +23,7 @@ export const styles = StyleSheet.create({
     paddingVertical: moderateVerticalScale(8),
   },
   fontstyle: {
-    fontSize: scale(14),
+    fontSize: scale(15),
     textAlign: "center",
     fontWeight: "700",
     color: "#ffffff",

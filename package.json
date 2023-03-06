@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^18.0.1",
+    "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-firebase/app": "^16.5.0",
     "@react-native-firebase/storage": "^16.5.0",
     "@react-navigation/bottom-tabs": "^6.5.2",
@@ -36,11 +37,13 @@
     "react-native-size-matters": "^0.4.0",
     "react-native-web": "~0.18.11",
     "react-native-webview": "11.26.0",
-    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
-    "@react-native-async-storage/async-storage": "1.17.11"
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
   },
   "private": true
 }

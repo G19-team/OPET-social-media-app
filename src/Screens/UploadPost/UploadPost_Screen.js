@@ -162,16 +162,17 @@ const UploadPost_Screen = ({ navigation }) => {
               Date.now().toString()
             ),
             {
+              orgId: orgId,
+              userId: user.uid,
+              userimage: userData.UserImage,
+              username: userData.Firstname + " " + userData.Lastname,
               URL: downloadURL,
               fileType: fileType,
               fileName: fileName,
-              username: userData.Firstname + " " + userData.Lastname,
-              userId: user.uid,
-              orgId: orgId,
-              caption: caption,
               likes: [""],
               dislikes: [""],
               comments: [""],
+              caption: caption,
               createdAt: serverTimestamp(),
             }
           ).then(() => {
