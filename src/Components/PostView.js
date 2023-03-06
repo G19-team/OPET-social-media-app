@@ -1,22 +1,12 @@
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Image,
 } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
-
-import { db } from "../db/firebaseConfig";
-
-import {
-  collection,
-  collectionGroup,
-  doc,
-  getDoc,
-  onSnapshot,
-} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 
 import FitImage from "react-native-fit-image";
 import {
@@ -36,26 +26,51 @@ import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
 
+import { db } from "../db/firebaseConfig";
+import {
+  collection,
+  query,
+  getDocs,
+  onSnapshot,
+  collectionGroup,
+  docs,
+  where,
+  orderBy,
+} from "firebase/firestore";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { withRepeat } from "react-native-reanimated";
+
 const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
+  const [orgId, setOrgId] = useState(null);
 
-  useLayoutEffect(() => {
-    const docRef = collection(db, "post");
-    onSnapshot(docRef, (post) =>
-      setData(
-        post.docs
-          .map((post) => ({
-            id: post.id,
-            data: post.data(),
-          }))
-          .reverse()
-      )
-    );
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+  useEffect(() => {
+    const id = AsyncStorage.getItem("orgId")
+      .then((id) => {
+        setOrgId(id);
+        fetchData(id);
+      })
+      .catch((e) => console.log(e));
   }, []);
+
+  const fetchData = async (id) => {
+    const postQuery = query(
+      collectionGroup(db, "posts"),
+      where("orgId", "==", id.toString()),
+      orderBy("createdAt", "asc")
+    );
+    onSnapshot(postQuery, (post) => {
+      setData(
+        post.docs.map((post) => ({
+          id: post.id,
+          data: post.data(),
+        }))
+      );
+    });
+    setIsLoading(false);
+  };
 
   return isLoading ? (
     <View
@@ -70,12 +85,39 @@ const PostView = ({ navigation }) => {
   ) : (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
         data={data}
         renderItem={({ item }) => <Post data={item.data} />}
         keyExtractor={(item) => item.id}
-        showsFooterScrollIndicator={false}
+        ListEmptyComponent={
+          <View
+            style={{
+              flex: 1,
+              marginVertical: 35,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FitImage
+              source={require("../Assets/Img/empty-box.png")}
+              resizeMode="stretch"
+              style={{ width: 150, height: 150 }}
+            />
+            <Text>No post available to display</Text>
+          </View>
+        }
         ListHeaderComponent={
           <View>
+            <Text
+              style={{
+                fontSize: scale(20),
+                paddingHorizontal: 10,
+                fontWeight: "bold",
+              }}
+            >
+              Stories :
+            </Text>
             <Stories />
             <Text
               style={{
@@ -156,6 +198,7 @@ const Post = ({ data }) => {
 const styles = StyleSheet.create({
   post: {
     margin: moderateVerticalScale(10),
+
     borderRadius: moderateScale(20),
     backgroundColor: "#f8f8f8",
   },
@@ -176,8 +219,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   postcontent: {
-    // paddingVertical: moderateVerticalScale(3),
-    borderRadius: 3,
+    padding: moderateScale(8),
+    borderRadius: moderateScale(8),
     overflow: "hidden",
   },
   postfooter: {

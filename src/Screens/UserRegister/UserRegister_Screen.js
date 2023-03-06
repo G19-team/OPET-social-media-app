@@ -50,10 +50,10 @@ const UserRegister_Screen = ({ navigation }) => {
     const Ref = doc(db, "organization", organizationId);
     const docRef = await setDoc(doc(Ref, "users", uid), {
       OrganizationID: organizationId,
-      Fullname: fname,
+      Firstname: fname.toLowerCase(),
+      Middlename: mname.toLowerCase(),
+      Lastname: lname.toLowerCase(),
       Country: country,
-      Middlename: mname,
-      Lastname: lname,
       City: city,
       State: state,
       Phonenumber: phoneNumber,

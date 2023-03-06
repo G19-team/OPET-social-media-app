@@ -18,8 +18,10 @@ import { styles } from "./Style";
 //importing database related libarary.
 import { db, storage } from "../../db/firebaseConfig";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
-import { setDoc, doc, setLogLevel } from "firebase/firestore";
+import { setDoc, doc, serverTimestamp, getDoc } from "firebase/firestore";
+import { auth } from "../../db/firebaseConfig";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 //image and document picker library.
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -49,6 +51,24 @@ const UploadPost_Screen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [progress, setProgress] = useState(0);
+
+  const [user, setUser] = useState(null);
+
+  const [orgId, setOrgId] = useState(null);
+
+  useLayoutEffect(() => {
+    const init = async () => {
+      try {
+        setUser(auth.currentUser);
+        const id = await AsyncStorage.getItem("orgId")
+          .then((id) => setOrgId(id))
+          .catch((e) => console.log(e));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    init();
+  }, []);
 
   //dbUpload is an utility function, which upload image,file or video to firebase storage.
   const dbUpload = async (file, caption, fileType, fileName) => {
@@ -119,20 +139,42 @@ const UploadPost_Screen = ({ navigation }) => {
         setCaption(null);
       },
       () => {
+        const userRef = doc(db, "organization", orgId, "users", user.uid);
+        let userData = {};
+        getDoc(userRef).then((doc) => {
+          console.log("Document data:", doc.data());
+          userData = doc.data();
+        });
+
+        // console.log(doc.data().Firstname);
+
         // Handle successful uploads on complete
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          const docRef = await setDoc(doc(db, "post", Date.now().toString()), {
-            URL: downloadURL,
-            fileType: fileType,
-            fileName: fileName,
-            username: "krish",
-            userId: 206090307083,
-            caption: caption,
-            likes: [""],
-            dislikes: [""],
-            comments: [""],
-          }).then(() => {
+          const docRef = await setDoc(
+            doc(
+              db,
+              "organization",
+              orgId,
+              "users",
+              user.uid,
+              "posts",
+              Date.now().toString()
+            ),
+            {
+              URL: downloadURL,
+              fileType: fileType,
+              fileName: fileName,
+              username: userData.Firstname + " " + userData.Lastname,
+              userId: user.uid,
+              orgId: orgId,
+              caption: caption,
+              likes: [""],
+              dislikes: [""],
+              comments: [""],
+              createdAt: serverTimestamp(),
+            }
+          ).then(() => {
             setImage(null);
             setFileResult(null);
             setCaption(null);

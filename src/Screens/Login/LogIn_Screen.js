@@ -32,14 +32,6 @@ const LogIn_Screen = ({ navigation }) => {
     Password: "",
   });
 
-  const storeData = async (value) => {
-    try {
-      await AsyncStorage.setItem("ordId", value).then((e) => console.log(e));
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const login = () => {
     signInWithEmailAndPassword(
       auth,
@@ -49,7 +41,7 @@ const LogIn_Screen = ({ navigation }) => {
       .then((userCredential) => {
         console.log(userCredential.user);
         const user = userCredential.user;
-        storeData(logInDetails.organizationID);
+        AsyncStorage.setItem("orgId", logInDetails.organizationID);
         navigation.replace("HomeNav");
       })
       .catch((error) => {
