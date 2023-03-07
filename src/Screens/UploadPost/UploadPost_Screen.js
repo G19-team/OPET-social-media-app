@@ -169,9 +169,9 @@ const UploadPost_Screen = ({ navigation }) => {
               URL: downloadURL,
               fileType: fileType,
               fileName: fileName,
-              likes: [""],
-              dislikes: [""],
-              comments: [""],
+              likes: [],
+              dislikes: [],
+              suggestions: [],
               caption: caption,
               createdAt: serverTimestamp(),
             }

@@ -29,21 +29,22 @@ import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
 
-import { db } from "../db/firebaseConfig";
+import { db, auth } from "../db/firebaseConfig";
 import {
-  collection,
+  doc,
   query,
-  getDocs,
   onSnapshot,
   collectionGroup,
-  docs,
   where,
   orderBy,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SlideInDown } from "react-native-reanimated";
 import MyButton from "./MyButton";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(null);
@@ -60,6 +61,7 @@ const PostView = ({ navigation }) => {
       }
     });
   };
+
   useEffect(() => {
     const id = AsyncStorage.getItem("orgId")
       .then((id) => {
@@ -135,6 +137,8 @@ const PostView = ({ navigation }) => {
           renderItem={({ item }) => (
             <Post
               data={item.data}
+              postId={item.id}
+              orgId={orgId}
               visibleComment={visibleComment}
               setShowComment={setShowComment}
               style={{ zIndex: -1 }}
@@ -189,7 +193,49 @@ const PostView = ({ navigation }) => {
 
 export default PostView;
 
-const Post = ({ data, visibleComment, setShowComment }) => {
+const Post = ({ data, visibleComment, setShowComment, postId, orgId }) => {
+  const postRef = doc(
+    db,
+    "organization",
+    orgId,
+    "users",
+    data.userId,
+    "posts",
+    postId
+  );
+
+  const likeThePost = async () => {
+    const likeStatus = data.likes.includes(auth.currentUser.uid);
+    const dislikeStatus = data.dislikes.includes(auth.currentUser.uid);
+    //If user disliked the post then remove it.
+    if (dislikeStatus == true) {
+      await updateDoc(postRef, { dislikes: arrayRemove(auth.currentUser.uid) });
+    }
+    console.log(likeStatus);
+    await updateDoc(
+      postRef,
+      likeStatus
+        ? { likes: arrayRemove(auth.currentUser.uid) }
+        : { likes: arrayUnion(auth.currentUser.uid.toString()) }
+    );
+  };
+
+  const dislikeThePost = async () => {
+    const likeStatus = data.likes.includes(auth.currentUser.uid);
+    const dislikeStatus = data.dislikes.includes(auth.currentUser.uid);
+    //if user liked the post then remove it
+    if (likeStatus == true) {
+      await updateDoc(postRef, { likes: arrayRemove(auth.currentUser.uid) });
+    }
+
+    await updateDoc(
+      postRef,
+      dislikeStatus
+        ? { dislikes: arrayRemove(auth.currentUser.uid) }
+        : { dislikes: arrayUnion(auth.currentUser.uid.toString()) }
+    );
+  };
+
   const navigation = useNavigation();
   return (
     <>
@@ -241,20 +287,103 @@ const Post = ({ data, visibleComment, setShowComment }) => {
         </View>
         <View style={styles.postfooter}>
           <View style={styles.postoptions}>
-            <TouchableOpacity style={styles.options}>
-              <Text>{data.likes} likes</Text>
-              <Ionicons name="thumbs-up-outline" size={moderateScale(25)} />
+            <TouchableOpacity
+              style={[
+                styles.options,
+                {
+                  backgroundColor: data.likes.includes(auth.currentUser.uid)
+                    ? "#f7ebff"
+                    : "#f8f8f8",
+                  borderRadius: moderateScale(10),
+                },
+              ]}
+              onPress={() => likeThePost()}
+            >
+              <Text
+                style={{
+                  color: data.likes.includes(auth.currentUser.uid)
+                    ? "#ab3dff"
+                    : "black",
+                }}
+              >
+                {data.likes.length}{" "}
+                {data.likes.length === 1 || data.likes.length === 0
+                  ? "like"
+                  : "likes"}
+              </Text>
+              {/* <Ionicons
+                name="thumbs-up-outline"
+                size={moderateScale(25)}
+                color={
+                  data.likes.includes(auth.currentUser.uid)
+                    ? "#9000ff"
+                    : "black"
+                }
+              /> */}
+              <Icon
+                name={
+                  data.likes.includes(auth.currentUser.uid)
+                    ? "thumb-up"
+                    : "thumb-up-outline"
+                }
+                size={moderateScale(25)}
+                color={
+                  data.likes.includes(auth.currentUser.uid)
+                    ? "#ab3dff"
+                    : "black"
+                }
+              />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-              <Text>{data.dislikes} dislikes</Text>
-              <Ionicons name="thumbs-down-outline" size={moderateScale(25)} />
+            <TouchableOpacity
+              style={[
+                styles.options,
+                {
+                  backgroundColor: data.dislikes.includes(auth.currentUser.uid)
+                    ? "#ffd5d5"
+                    : "#f8f8f8",
+                  borderRadius: moderateScale(10),
+                },
+              ]}
+              onPress={() => dislikeThePost()}
+            >
+              <Text
+                style={{
+                  color: data.dislikes.includes(auth.currentUser.uid)
+                    ? "red"
+                    : "black",
+                }}
+              >
+                {data.dislikes.length}
+                {data.dislikes.length === 1 || data.dislikes.length === 0
+                  ? " dislike"
+                  : " dislikes"}
+              </Text>
+              {/* <Ionicons
+                name="thumbs-down-outline"
+                size={moderateScale(25)}
+                color={
+                  data.dislikes.includes(auth.currentUser.uid) ? "red" : "black"
+                }
+              /> */}
+              <Icon
+                name={
+                  data.dislikes.includes(auth.currentUser.uid)
+                    ? "thumb-down"
+                    : "thumb-down-outline"
+                }
+                size={moderateScale(25)}
+                color={
+                  data.dislikes.includes(auth.currentUser.uid) ? "red" : "black"
+                }
+              />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.options}
               onPress={() => visibleComment()}
             >
-              <Text>{data.comments} comment</Text>
-              <Ionicons name="chatbox-outline" size={moderateScale(25)} />
+              <Text>{data.suggestions.length} suggestion</Text>
+              {/* <Ionicons name="chatbox-outline" size={moderateScale(25)} /> */}
+              <Icon name="comment-outline" size={moderateScale(25)} />
             </TouchableOpacity>
           </View>
         </View>
@@ -306,10 +435,13 @@ const styles = StyleSheet.create({
   },
   options: {
     alignItems: "center",
+    paddingVertical: moderateVerticalScale(5),
+    width: "28%",
+    overflow: "hidden",
   },
   postcaption: {
     paddingHorizontal: moderateScale(15),
-    paddingVertical: moderateScale(3),
+    marginBottom:moderateVerticalScale(5)
     // marginTop: moderateVerticalScale(5),
   },
 });
