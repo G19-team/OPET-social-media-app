@@ -6,6 +6,7 @@ import OrganizationRegister_Screen from "../Screens/OrganizationRegister/Organiz
 import EditProfile_Screen from "../Screens/EditProfle/EditProfile_screen";
 import DocumentViewer_Screen from "../Screens/DocumentVIewer/DocumentViewer_Screen";
 import Splash_Screen from "../Screens/SplashScreen/Splash_Screen";
+import Suggestion from "../Screens/SuggestionScreen/Suggestion";
 import HomeNav from "./HomeNav";
 
 //libraries for navigation.
@@ -18,6 +19,7 @@ import { useState, useEffect } from "react";
 const Stack = createNativeStackNavigator();
 
 import React from "react";
+import { moderateScale } from "react-native-size-matters";
 
 const StackNav = () => {
   const [showSplashscreen, setshowSplashscreen] = useState(true);
@@ -66,6 +68,17 @@ const StackNav = () => {
           name={"DocumentViewer_Screen"}
           component={DocumentViewer_Screen}
           options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name="Suggestion"
+          component={Suggestion}
+          options={{
+            headerShown: true,
+            contentStyle: {
+              paddingHorizontal: moderateScale(11),
+              backgroundColor: "#ffffff",
+            },
+          }}
         />
         <Stack.Screen
           name={"HomeNav"}

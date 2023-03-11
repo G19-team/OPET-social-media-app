@@ -3,11 +3,8 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Pressable,
-  Modal,
   Image,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
@@ -29,9 +26,10 @@ import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
 
-import { db, auth } from "../db/firebaseConfig";
+import { db, auth, storage } from "../db/firebaseConfig";
 import {
   doc,
+  deleteDoc,
   query,
   onSnapshot,
   collectionGroup,
@@ -41,26 +39,15 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-
+import { getStorage, ref, deleteObject } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MyButton from "./MyButton";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(null);
   const [orgId, setOrgId] = useState(null);
-  const [showComment, setShowComment] = useState(false);
-
-  const visibleComment = () => {
-    setShowComment(() => {
-      if (showComment == true) {
-        return false;
-      }
-      if (showComment == false) {
-        return true;
-      }
-    });
-  };
 
   useEffect(() => {
     const id = AsyncStorage.getItem("orgId")
@@ -102,33 +89,6 @@ const PostView = ({ navigation }) => {
     </View>
   ) : (
     <>
-      <Modal
-        transparent={true}
-        visible={showComment}
-        style={{ zIndex: 2, flex: 1 }}
-        animationType="slide"
-      >
-        <View
-          style={{ width: "100%", height: "100%", justifyContent: "flex-end" }}
-        >
-          <View
-            style={{
-              elevation: 5,
-              width: "100%",
-              height: "80%",
-              borderWidth: 0.7,
-              borderColor: "#000000",
-              backgroundColor: "#ffffff",
-              borderTopRightRadius: moderateScale(25),
-              borderTopLeftRadius: moderateScale(25),
-              padding: moderateScale(20),
-            }}
-          >
-            <MyButton title="close" onPress={() => visibleComment()} />
-            <Text>Comments!</Text>
-          </View>
-        </View>
-      </Modal>
       <View style={{ flex: 1, zIndex: -2 }}>
         <FlatList
           style={{ flex: 1 }}
@@ -139,8 +99,6 @@ const PostView = ({ navigation }) => {
               data={item.data}
               postId={item.id}
               orgId={orgId}
-              visibleComment={visibleComment}
-              setShowComment={setShowComment}
               style={{ zIndex: -1 }}
             />
           )}
@@ -193,7 +151,7 @@ const PostView = ({ navigation }) => {
 
 export default PostView;
 
-const Post = ({ data, visibleComment, setShowComment, postId, orgId }) => {
+const Post = ({ data, postId, orgId }) => {
   const postRef = doc(
     db,
     "organization",
@@ -203,6 +161,24 @@ const Post = ({ data, visibleComment, setShowComment, postId, orgId }) => {
     "posts",
     postId
   );
+
+  const deletePost = async () => {
+    try {
+      // delete the document using the deleteDoc function
+      await deleteDoc(postRef)
+        .then(async () => {
+          const fileRef = ref(storage, data.URL);
+          await deleteObject(fileRef).then(() =>
+            alert("Post deleted", "Your post has been deleted")
+          );
+        })
+        .catch(() =>
+          alert("Error", "Your post cant be deleted because of some reason")
+        );
+    } catch (error) {
+      console.log("Error deleting post:", error);
+    }
+  };
 
   const likeThePost = async () => {
     const likeStatus = data.likes.includes(auth.currentUser.uid);
@@ -241,13 +217,38 @@ const Post = ({ data, visibleComment, setShowComment, postId, orgId }) => {
     <>
       <View style={styles.post}>
         <View style={styles.postheader}>
-          <Image
-            source={{ uri: data.userimage }}
-            resizeMode="cover"
-            style={styles.profilepicture}
-          />
+          <View style={styles.postinfo}>
+            <Image
+              source={{ uri: data.userimage }}
+              resizeMode="cover"
+              style={styles.profilepicture}
+            />
 
-          <Text style={styles.name}>{data.username}</Text>
+            <Text style={styles.name}>{data.username}</Text>
+          </View>
+          {data.userId == auth.currentUser.uid && (
+            <TouchableOpacity
+              onPress={(postRef, url = data.URL) =>
+                alert(
+                  "Delete post",
+                  "Are you sure you want to delete this suggestion? This action cannot be undone.",
+                  [
+                    {
+                      text: "Yes",
+                      onPress: () => deletePost(postRef, url),
+                    },
+                    { text: "No", style: "cancel" },
+                  ]
+                )
+              }
+            >
+              <Icon
+                name="trash-can-outline"
+                size={moderateScale(24)}
+                color="red"
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.postcaption}>
           {/* <Text style={{ fontWeight: "bold", fontSize: scale(16) }}>
@@ -379,9 +380,18 @@ const Post = ({ data, visibleComment, setShowComment, postId, orgId }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.options}
-              onPress={() => visibleComment()}
+              onPress={() =>
+                navigation.push("Suggestion", {
+                  postId: postId,
+                  userId: data.userId,
+                  orgId: orgId,
+                })
+              }
             >
-              <Text>{data.suggestions.length} suggestion</Text>
+              <Text style={{ textAlign: "center" }}>
+                {data.suggestions.length}{" "}
+                {data.suggestions.length > 9 ? "sugge.." : "suggestion"}
+              </Text>
               {/* <Ionicons name="chatbox-outline" size={moderateScale(25)} /> */}
               <Icon name="comment-outline" size={moderateScale(25)} />
             </TouchableOpacity>
@@ -405,6 +415,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: moderateScale(15),
     paddingVertical: moderateScale(10),
+    justifyContent: "space-between",
+  },
+  postinfo: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   profilepicture: {
     width: moderateScale(45),
@@ -441,7 +456,7 @@ const styles = StyleSheet.create({
   },
   postcaption: {
     paddingHorizontal: moderateScale(15),
-    marginBottom:moderateVerticalScale(5)
+    marginBottom: moderateVerticalScale(5),
     // marginTop: moderateVerticalScale(5),
   },
 });
