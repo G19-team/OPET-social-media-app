@@ -22,9 +22,10 @@ import { setDoc, doc, serverTimestamp, getDoc } from "firebase/firestore";
 import { auth } from "../../db/firebaseConfig";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-//image and document picker library.
+//image , video and document picker library.
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
+import { Video, AVPlaybackStatus } from "expo-av";
 
 //library to display image perfectly.
 import FitImage from "react-native-fit-image";
@@ -41,6 +42,8 @@ import alert from "../../Utills/alert";
 const UploadPost_Screen = ({ navigation }) => {
   //if user select image, then information or properties(URL,name,type) will be stored in image useState variable.
   const [image, setImage] = useState(null);
+
+  const [video, setVideo] = useState(null);
 
   //if user select any file, then information or properties(URL,name,type) will be stored in file useState variable.
   const [fileResult, setFileResult] = useState(null);
@@ -70,13 +73,60 @@ const UploadPost_Screen = ({ navigation }) => {
     init();
   }, []);
 
-  //dbUpload is an utility function, which upload image,file or video to firebase storage.
-  const dbUpload = async (file, caption, fileType, fileName) => {
+  //dbUploadFiles is an utility function, which only upload description.
+  const dbUpload = async (caption) => {
+    const userRef = doc(db, "organization", orgId, "users", user.uid);
+    let userData = {};
+    await getDoc(userRef).then((doc) => {
+      console.log("Document data:", doc.data());
+      userData = doc.data();
+    });
+    const docRef = await setDoc(
+      doc(
+        db,
+        "organization",
+        orgId,
+        "users",
+        user.uid,
+        "posts",
+        Date.now().toString()
+      ),
+      {
+        orgId: orgId,
+        userId: user.uid,
+        userimage: userData.UserImage,
+        username: userData.Firstname + " " + userData.Lastname,
+        URL: null,
+        fileType: null,
+        fileName: null,
+        likes: [],
+        dislikes: [],
+        suggestions: [],
+        caption: caption,
+        createdAt: serverTimestamp(),
+      }
+    ).then(() => {
+      alert("Successfully completed", "your file is successfully uploaded", [
+        {
+          text: "ok",
+          onPress: () => navigation.navigate("Home_Screen"),
+          style: "cancel",
+        },
+      ]);
+      setImage(null);
+      setFileResult(null);
+      setVideo(null);
+      setCaption(null);
+    });
+  };
+
+  //dbUploadFiles is an utility function, which upload image,file or video to firebase storage.
+  const dbUploadFiles = async (file, caption, fileType, fileName) => {
     console.log(file);
-    if (!file || !caption) {
-      Alert.alert("Warning!!", "You have to give both file and caption");
-      return 0;
-    }
+    // if (!file || !caption) {
+    //   Alert.alert("Warning!!", "You have to give both file and caption");
+    //   return 0;
+    // }
 
     //convert any file to blob file code is below.
     let result = await fetch(file).catch((er) => console.log(er));
@@ -89,6 +139,7 @@ const UploadPost_Screen = ({ navigation }) => {
 
     setIsLoading(true);
     const uploadTask = uploadBytesResumable(storageRef, blobFile);
+
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -136,6 +187,7 @@ const UploadPost_Screen = ({ navigation }) => {
         setIsLoading(false);
         setImage(null);
         setFileResult(null);
+        setVideo(null);
         setCaption(null);
       },
       () => {
@@ -178,6 +230,7 @@ const UploadPost_Screen = ({ navigation }) => {
           ).then(() => {
             setImage(null);
             setFileResult(null);
+            setVideo(null);
             setCaption(null);
           });
         });
@@ -224,23 +277,31 @@ const UploadPost_Screen = ({ navigation }) => {
       allowsEditing: true,
     }).then((result) => {
       if (!result?.canceled) {
-        setFileResult(result.assets[0].uri);
+        setVideo(result.assets[0]);
+        console.log(result.assets[0]);
       }
     });
   };
 
-  const checkFileType = (image, fileResult) => {
+  const checkFileType = (image, fileResult, video) => {
     if (image) {
-      dbUpload(
+      dbUploadFiles(
         image.uri,
         caption,
         image.type,
         image.uri.substring(image.uri.lastIndexOf("/") + 1)
       );
     } else if (fileResult) {
-      dbUpload(fileResult.uri, caption, "document", fileResult.name);
+      dbUploadFiles(fileResult.uri, caption, "document", fileResult.name);
+    } else if (video) {
+      dbUploadFiles(
+        video.uri,
+        caption,
+        video.type,
+        video.uri.substring(video.uri.lastIndexOf("/") + 1)
+      );
     } else {
-      console.log("confusion");
+      dbUpload(caption);
     }
   };
 
@@ -250,14 +311,22 @@ const UploadPost_Screen = ({ navigation }) => {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        flexDirection: "row",
+        flexDirection: "column",
         backgroundColor: "#ffffff",
       }}
     >
-      <Text>
-        uplaoding done: {progress.toFixed()}% {"\t"}
-      </Text>
-      <ActivityIndicator size="large" color={Colors.primaryColor200} />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text>
+          uplaoding done: {progress.toFixed()}% {"\t"}
+        </Text>
+        <ActivityIndicator size="large" color={Colors.primaryColor200} />
+      </View>
     </View>
   ) : (
     <ScrollView style={styles.container}>
@@ -273,21 +342,31 @@ const UploadPost_Screen = ({ navigation }) => {
         ]}
       >
         {/*if user select image then image will be displayed as preview otherwise file.*/}
-        {image ? (
-          <FitImage source={{ uri: image.uri }} resizeMode="cover" />
-        ) : fileResult ? (
+        {image && <FitImage source={{ uri: image.uri }} resizeMode="cover" />}
+        {fileResult && (
           <DocumentView
             type={fileResult.mimeType}
             name={fileResult.name}
             size={fileResult.size}
           />
-        ) : (
-          <Text>No preview available.</Text>
         )}
+        {video && (
+          <Video
+            // ref={video}
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="contain"
+            source={{
+              uri: video.uri,
+            }}
+            useNativeControls
+            isLooping
+          />
+        )}
+        {!image && !fileResult && !video && <Text>No preview available.</Text>}
       </View>
 
       {/* if image or file is selected then don't need to display options */}
-      {!image && !fileResult && (
+      {!image && !fileResult && !video && (
         <>
           <Text style={styles.subheading}>
             Select one of the following option :
@@ -359,10 +438,10 @@ const UploadPost_Screen = ({ navigation }) => {
         iconColor={Colors.primaryColor10}
         style={styles.btn}
         fontStyle={styles.fontstyle}
-        onPress={() => checkFileType(image, fileResult)}
+        onPress={() => checkFileType(image, fileResult, video)}
       />
 
-      {(image || fileResult) && (
+      {(image || fileResult || video) && (
         <MyButton
           title="Remove"
           style={styles.btn}
@@ -370,6 +449,7 @@ const UploadPost_Screen = ({ navigation }) => {
           onPress={() => {
             setFileResult(null);
             setImage(null);
+            setVideo(null);
             setCaption("");
           }}
         />

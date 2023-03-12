@@ -23,6 +23,7 @@
     "expo-linear-gradient": "~12.1.1",
     "expo-status-bar": "~1.4.4",
     "firebase": "^9.15.0",
+    "npm-package-arg": "^10.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.3",
@@ -37,7 +38,8 @@
     "react-native-size-matters": "^0.4.0",
     "react-native-web": "~0.18.11",
     "react-native-webview": "11.26.0",
-    "reanimated-bottom-sheet": "^1.0.0-alpha.22"
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
+    "expo-av": "~13.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

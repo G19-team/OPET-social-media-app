@@ -73,6 +73,7 @@ const UserRegister_Screen = ({ navigation }) => {
       Password: password,
       OrganizationID: orgid,
       UserImage: firebaseImageUrl,
+      StoryUrl: null,
     })
       .then(() => {
         navigation.replace("Start_Screen");

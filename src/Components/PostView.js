@@ -8,7 +8,10 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
+import { Video, AVPlaybackStatus } from "expo-av";
 import FitImage from "react-native-fit-image";
+import DocumentView from "./DocumentView";
+
 import {
   moderateScale,
   moderateVerticalScale,
@@ -21,7 +24,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 
 import { Colors } from "../Assets/Colors/Colors";
-import DocumentView from "./DocumentView";
 import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
@@ -265,7 +267,35 @@ const Post = ({ data, postId, orgId }) => {
           </Text>
         </View>
         <View style={styles.postcontent}>
-          {data.fileType === "image" ? (
+          {data.fileType === "image" && (
+            <FitImage source={{ uri: data.URL }} resizeMode="cover" />
+          )}
+          {data.fileType === "document" && (
+            <TouchableOpacity
+              onPress={() => {
+                OpenAnything.Pdf(data.URL);
+                // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
+              }}
+            >
+              <DocumentView
+                type={data.fileType}
+                name={data.fileName}
+                size={1.121212}
+              />
+            </TouchableOpacity>
+          )}
+          {data.fileType === "video" && (
+            <Video
+              style={{ height: 250 }}
+              resizeMode="contain"
+              source={{
+                uri: data.URL,
+              }}
+              useNativeControls
+            />
+          )}
+          {data.fileType === null && null}
+          {/* {data.fileType === "image" ? (
             <FitImage
               source={{ uri: data.URL }}
               resizeMode="cover"
@@ -284,7 +314,7 @@ const Post = ({ data, postId, orgId }) => {
                 size={1.121212}
               />
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
         <View style={styles.postfooter}>
           <View style={styles.postoptions}>
