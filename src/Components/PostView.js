@@ -167,17 +167,18 @@ const Post = ({ data, postId, orgId }) => {
   const deletePost = async () => {
     try {
       // delete the document using the deleteDoc function
-      await deleteDoc(postRef)
-        .then(async () => {
-          const fileRef = ref(storage, data.URL);
-          await deleteObject(fileRef).then(() =>
-            alert("Post deleted", "Your post has been deleted")
-          );
-        })
-        .catch(() =>
-          alert("Error", "Your post cant be deleted because of some reason")
+      await deleteDoc(postRef);
+      //if user only uploaded caption(text) then we dont have to delete any file from storage.
+      if (data.fileType != null) {
+        const fileRef = ref(storage, data.URL);
+        await deleteObject(fileRef).then(() =>
+          alert("Post deleted", "Your post has been deleted")
         );
+      } else {
+        alert("Post deleted", "Your post has been deleted");
+      }
     } catch (error) {
+      alert("Error", "Your post cant be deleted because of some reason");
       console.log("Error deleting post:", error);
     }
   };
