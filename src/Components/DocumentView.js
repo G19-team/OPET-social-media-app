@@ -19,6 +19,8 @@ const DocumentView = ({ type, name, size }) => {
       setDocType({
         type: "pdf",
         path: require("../Assets/Icons/Pdf-icon.png"),
+        lightColor: "lightgray",
+        darkColor: "#FF1700",
       });
     } else if (
       type == "application/msword" ||
@@ -27,6 +29,8 @@ const DocumentView = ({ type, name, size }) => {
       setDocType({
         type: "doc",
         path: require("../Assets/Icons/Doc-icon.png"),
+        lightColor: "lightgray",
+        darkColor: "#2B3467",
       });
     } else {
       setDocType(null);
@@ -34,17 +38,17 @@ const DocumentView = ({ type, name, size }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: docType.darkColor }]}>
+      <View style={[styles.header, { backgroundColor: docType.lightColor }]}>
         <Image source={docType.path} style={styles.icon} />
         <Text style={styles.name}>{name}</Text>
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.info}>
+      {/* <View style={styles.footer}>
+        {/* <Text style={styles.info}>
           {docSize} mb{"\t"}
-        </Text>
+        </Text> 
         <Text style={styles.info}>- {"\t" + docType.type}</Text>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -55,9 +59,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#89c2d9",
     borderRadius: moderateScale(10),
-    marginHorizontal: moderateScale(5),
+    width: "100%",
   },
   header: {
+    margin: moderateScale(5),
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#a9d6ee",

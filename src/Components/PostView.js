@@ -20,13 +20,14 @@ import {
 
 import * as OpenAnything from "react-native-openanything";
 
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 
 import { Colors } from "../Assets/Colors/Colors";
 import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
+
+import * as Animatable from "react-native-animatable";
 
 import { db, auth, storage } from "../db/firebaseConfig";
 import {
@@ -96,9 +97,10 @@ const PostView = ({ navigation }) => {
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           data={data}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <Post
               data={item.data}
+              index={index}
               postId={item.id}
               orgId={orgId}
               style={{ zIndex: -1 }}
@@ -153,7 +155,7 @@ const PostView = ({ navigation }) => {
 
 export default PostView;
 
-const Post = ({ data, postId, orgId }) => {
+const Post = ({ data, postId, orgId, index }) => {
   const postRef = doc(
     db,
     "organization",
@@ -218,7 +220,12 @@ const Post = ({ data, postId, orgId }) => {
   const navigation = useNavigation();
   return (
     <>
-      <View style={styles.post}>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={1000}
+        delay={index * 110}
+        style={styles.post}
+      >
         <View style={styles.postheader}>
           <View style={styles.postinfo}>
             <Image
@@ -268,10 +275,10 @@ const Post = ({ data, postId, orgId }) => {
           </Text>
         </View>
         <View style={styles.postcontent}>
-          {data.fileType === "image" && (
+          {data.fileType.split("/")[0] === "image" && (
             <FitImage source={{ uri: data.URL }} resizeMode="cover" />
           )}
-          {data.fileType === "document" && (
+          {data.fileType.split("/")[0] === "document" && (
             <TouchableOpacity
               onPress={() => {
                 OpenAnything.Pdf(data.URL);
@@ -279,13 +286,13 @@ const Post = ({ data, postId, orgId }) => {
               }}
             >
               <DocumentView
-                type={data.fileType}
+                type={data.fileType.split("/").slice(1).join("/")}
                 name={data.fileName}
-                size={1.121212}
+                // size={200000}
               />
             </TouchableOpacity>
           )}
-          {data.fileType === "video" && (
+          {data.fileType.split("/")[0] === "video" && (
             <Video
               style={{ height: 250 }}
               resizeMode="contain"
@@ -428,7 +435,7 @@ const Post = ({ data, postId, orgId }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </Animatable.View>
     </>
   );
 };

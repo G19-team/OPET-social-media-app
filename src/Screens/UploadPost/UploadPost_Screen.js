@@ -288,16 +288,21 @@ const UploadPost_Screen = ({ navigation }) => {
       dbUploadFiles(
         image.uri,
         caption,
-        image.type,
+        "image/" + image.type,
         image.uri.substring(image.uri.lastIndexOf("/") + 1)
       );
     } else if (fileResult) {
-      dbUploadFiles(fileResult.uri, caption, "document", fileResult.name);
+      dbUploadFiles(
+        fileResult.uri,
+        caption,
+        "document/" + fileResult.mimeType.toString(),
+        fileResult.name
+      );
     } else if (video) {
       dbUploadFiles(
         video.uri,
         caption,
-        video.type,
+        "video/" + video.type,
         video.uri.substring(video.uri.lastIndexOf("/") + 1)
       );
     } else {

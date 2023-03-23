@@ -25,6 +25,7 @@ const UserRegister_Screen = ({ navigation }) => {
   const [fname, setfname] = useState(null);
   const [mname, setmname] = useState(null);
   const [lname, setlname] = useState(null);
+  const [role, setRole] = useState(null);
   const [city, setcity] = useState(null);
   const [country, setcountry] = useState(null);
   const [state, setstate] = useState(null);
@@ -41,6 +42,7 @@ const UserRegister_Screen = ({ navigation }) => {
     setfname("");
     setmname("");
     setlname("");
+    setRole("");
     setcity("");
     setcountry("");
     setstate("");
@@ -62,6 +64,7 @@ const UserRegister_Screen = ({ navigation }) => {
       Firstname: fname.toLowerCase(),
       Middlename: mname.toLowerCase(),
       Lastname: lname.toLowerCase(),
+      role: role,
       Country: country,
       City: city,
       State: state,
@@ -69,7 +72,7 @@ const UserRegister_Screen = ({ navigation }) => {
       Email: email,
       Gender: gender,
       Birthdate: bdate,
-      UserName: username,
+      UserName: email,
       Password: password,
       OrganizationID: orgid,
       UserImage: firebaseImageUrl,
@@ -217,6 +220,11 @@ const UserRegister_Screen = ({ navigation }) => {
             lable="Last name :"
             onChangeText={(text) => setlname(text)}
             value={lname}
+          />
+          <LbInputBox
+            lable="Your role in organization :"
+            onChangeText={(text) => setRole(text)}
+            value={role}
           />
           <View style={styles.twobox}>
             <LbInputBox
