@@ -180,8 +180,7 @@ const Post = ({ data, postId, orgId, index }) => {
         alert("Post deleted", "Your post has been deleted");
       }
     } catch (error) {
-      alert("Error", "Your post cant be deleted because of some reason");
-      console.log("Error deleting post:", error);
+      alert("Error!", "Your post cant be deleted because of some reason");
     }
   };
 
@@ -192,7 +191,7 @@ const Post = ({ data, postId, orgId, index }) => {
     if (dislikeStatus == true) {
       await updateDoc(postRef, { dislikes: arrayRemove(auth.currentUser.uid) });
     }
-    console.log(likeStatus);
+
     await updateDoc(
       postRef,
       likeStatus

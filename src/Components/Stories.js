@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+
 import users from "../../userList.json";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
@@ -22,7 +22,6 @@ const Stories = () => {
     }).then((result) => {
       if (!result?.canceled) {
         setImage(result.assets[0].uri);
-        console.log(result.assets[0]);
       }
     });
   };

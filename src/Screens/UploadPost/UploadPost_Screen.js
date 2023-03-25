@@ -78,7 +78,6 @@ const UploadPost_Screen = ({ navigation }) => {
     const userRef = doc(db, "organization", orgId, "users", user.uid);
     let userData = {};
     await getDoc(userRef).then((doc) => {
-      console.log("Document data:", doc.data());
       userData = doc.data();
     });
     const docRef = await setDoc(
@@ -122,17 +121,9 @@ const UploadPost_Screen = ({ navigation }) => {
 
   //dbUploadFiles is an utility function, which upload image,file or video to firebase storage.
   const dbUploadFiles = async (file, caption, fileType, fileName) => {
-    console.log(file);
-    // if (!file || !caption) {
-    //   Alert.alert("Warning!!", "You have to give both file and caption");
-    //   return 0;
-    // }
-
     //convert any file to blob file code is below.
     let result = await fetch(file).catch((er) => console.log(er));
     const blobFile = await result.blob();
-
-    // const metadata = { contentType: " image/png" };
 
     //upload files to firebase code is below.
     const storageRef = ref(storage, "post/" + fileName);
@@ -160,19 +151,6 @@ const UploadPost_Screen = ({ navigation }) => {
             ]
           );
         }
-        console.log(
-          "Upload is " +
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100 +
-            "% done"
-        );
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-        }
       },
       (error) => {
         // Handle unsuccessful uploads
@@ -194,7 +172,6 @@ const UploadPost_Screen = ({ navigation }) => {
         const userRef = doc(db, "organization", orgId, "users", user.uid);
         let userData = {};
         getDoc(userRef).then((doc) => {
-          console.log("Document data:", doc.data());
           userData = doc.data();
         });
 
@@ -251,7 +228,6 @@ const UploadPost_Screen = ({ navigation }) => {
       .then((result) => {
         if (!(result?.type == "cancel")) {
           setFileResult(result);
-          console.log(result);
         }
       })
       .catch((e) => console.log(e));
@@ -265,7 +241,6 @@ const UploadPost_Screen = ({ navigation }) => {
     }).then((result) => {
       if (!result?.canceled) {
         setImage(result.assets[0]);
-        console.log(result.assets[0]);
       }
     });
   };
@@ -278,7 +253,6 @@ const UploadPost_Screen = ({ navigation }) => {
     }).then((result) => {
       if (!result?.canceled) {
         setVideo(result.assets[0]);
-        console.log(result.assets[0]);
       }
     });
   };

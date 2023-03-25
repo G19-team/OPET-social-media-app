@@ -35,7 +35,6 @@ import Animated from "react-native-reanimated";
 
 //plse install animated pakage and import
 
-
 import * as ImagePicker from "expo-image-picker";
 
 import { KeyboardAvoidingView } from "react-native";
@@ -53,7 +52,6 @@ const EditProfile_Screen = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
     }).then((result) => {
-      console.log(result);
       setImage(result.assets[0].uri);
       this.bs.current.snapTo(1);
     });

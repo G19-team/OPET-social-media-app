@@ -51,8 +51,6 @@ const Suggestion = ({ route }) => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => console.log(data));
-
   const sendSuggestion = async () => {
     if (!suggestion) {
       alert("Warning!", "Please enter data");
@@ -131,8 +129,6 @@ const DisplaySuggestion = ({ data, orgId, userId, index }) => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => console.log(userData));
-
   const sgn = {
     postId: data.postId,
     receiverId: data.receiverId,
@@ -142,8 +138,8 @@ const DisplaySuggestion = ({ data, orgId, userId, index }) => {
 
   const deleteSuggestion = async () => {
     await updateDoc(postRef, { suggestions: arrayRemove(sgn) })
-      .then(() => console.log("deleted"))
-      .catch((e) => console.log(e));
+      .then(() => alert("Deleted", "suggestion has been deleted"))
+      .catch((e) => alert("Error!", "Something went wrong"));
   };
 
   return (

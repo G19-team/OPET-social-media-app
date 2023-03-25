@@ -60,8 +60,6 @@ const EmployeeList_Screen = () => {
         unsubscribe.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
       );
     });
-
-    console.log(data);
   };
 
   const data1 = [

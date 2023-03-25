@@ -29,35 +29,6 @@ const Home_Screen = () => {
     init();
   }, []);
 
-  // Check if a document exists
-  // const checkDocumentExists = async (collectionName, documentId) => {
-  //   const nodeRef = doc(db, collectionName, documentId);
-
-  //   getDoc(nodeRef)
-  //     .then((docSnapshot) => {
-  //       if (docSnapshot.exists()) {
-  //         // The node exists
-  //         const nodeData = docSnapshot.data();
-  //         if (nodeData.orgemail === "info@abcinc.com") {
-  //           // The node contains the desired username
-  //           console.log(`Node ${nodeId} contains username `);
-  //         } else {
-  //           // The node does not contain the desired username
-  //           console.log(`Node ${nodeId} does not contain username `);
-  //         }
-  //       } else {
-  //         // The node does not exist
-  //         console.log(`Node ${nodeId} does not exist`);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(`Error getting node ${nodeId}: ${error}`);
-  //     });
-  // };
-
-  // Call the function to check if a document exists
-  // checkDocumentExists("organization", orgId.toString());
-
   return (
     <>
       <PostView />

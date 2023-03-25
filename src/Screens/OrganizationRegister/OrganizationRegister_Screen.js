@@ -45,7 +45,6 @@ const OrganizationRegister_Screen = ({ navigation }) => {
     }).then((result) => {
       if (!result?.canceled) {
         setImage(result.assets[0].uri);
-        console.log(result.assets[0].uri);
       }
     });
   };
@@ -93,19 +92,6 @@ const OrganizationRegister_Screen = ({ navigation }) => {
             "Successfully completed",
             "your image  is successfully uploaded"
           );
-        }
-        console.log(
-          "Upload isssss " +
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100 +
-            "% done"
-        );
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
         }
       },
       (error) => {

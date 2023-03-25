@@ -39,18 +39,18 @@ const LogIn_Screen = ({ navigation }) => {
       logInDetails.Password
     )
       .then((userCredential) => {
-        console.log(userCredential.user);
         const user = userCredential.user;
         AsyncStorage.setItem("orgId", logInDetails.organizationID);
         navigation.replace("HomeNav");
       })
       .catch((error) => {
         const errorMessage = error.message;
-        console.log(errorMessage);
         if (errorMessage === "Firebase: Error (auth/invalid-email).") {
-          alert("Validation!", "your email address is wrong");
+          alert("Warning!", "your email address is wrong");
         } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
-          alert("Validation!", "your password is wrong");
+          alert("Warning!", "your password is wrong");
+        } else {
+          alert("Warning!", error);
         }
       });
   };
