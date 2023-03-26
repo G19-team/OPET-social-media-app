@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TextInput,
   StyleSheet,
+  Platform,
 } from "react-native";
 
 import { useTheme } from "react-native-paper";
@@ -325,7 +326,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginTop: Platform.OS === "ios" ? 0 : -12,
+    // marginTop: Platform.OS === "web" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
   },
