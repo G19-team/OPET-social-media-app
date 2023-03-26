@@ -13,23 +13,23 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.primaryColor10,
   },
   preview: {
-    borderWidth:2,
-    borderColor:"black",
+    borderWidth: 2,
+    borderColor: "black",
     backgroundColor: "lightgray",
-    marginBottom:moderateVerticalScale(10),
+    marginBottom: moderateVerticalScale(10),
   },
   subheading: {
     fontSize: moderateScale(15),
     marginVertical: moderateVerticalScale(10),
-    fontWeight:"500"
+    fontWeight: "500",
   },
   selectionbox: {
     marginBottom: moderateVerticalScale(15),
-    overflow:"hidden",
+    overflow: "hidden",
     // borderRadius: moderateScale(20),
     borderColor: Colors.primaryColor50,
     // borderWidth: 0.5,
-    borderBottomWidth:0.5
+    borderBottomWidth: 1,
   },
   box: {
     flexDirection: "row",
@@ -43,30 +43,28 @@ export const styles = StyleSheet.create({
   },
   boxtext: {
     margin: moderateScale(15),
-    color:Colors.primaryColor50,
-    fontWeight:"400",
-
+    color: Colors.primaryColor50,
+    fontWeight: "400",
   },
   captioncontainer: {
     marginBottom: moderateVerticalScale(10),
   },
   caption: {
-    opacity:0.8,
-    fontSize:scale(14),
-    borderWidth: 0.5,
+    opacity: 0.8,
+    fontSize: scale(14),
+    borderWidth: 1,
     borderRadius: moderateScale(10),
     paddingHorizontal: moderateScale(10),
     paddingVertical: moderateVerticalScale(3),
-    
   },
-  btn:{
-    borderWidth:0,
-    marginVertical:moderateVerticalScale(15),
-    paddingVertical:moderateVerticalScale(10),
-    backgroundColor:Colors.primaryColor500,
+  btn: {
+    borderWidth: 0,
+    marginVertical: moderateVerticalScale(15),
+    paddingVertical: moderateVerticalScale(10),
+    backgroundColor: Colors.primaryColor500,
   },
-  fontstyle:{
-    color:Colors.primaryColor10,
-    fontWeight:"900"
-  }
+  fontstyle: {
+    color: Colors.primaryColor10,
+    fontWeight: "900",
+  },
 });

@@ -6,7 +6,7 @@ import { registerRootComponent } from "expo";
 import StackNav from "./src/Navigation/StackNav";
 import UploadPost_Screen from "./src/Screens/UploadPost/UploadPost_Screen";
 
-export default function App() {
+function App() {
   return (
     <View style={styles.container}>
       <StackNav />
@@ -25,3 +25,5 @@ const styles = StyleSheet.create({
 });
 
 registerRootComponent(App);
+
+export default App;

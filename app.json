@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/opet-splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#E0BAFD"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

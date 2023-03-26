@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     width: moderateScale(45),
     height: moderateScale(45),
     backgroundColor: "black",
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: Colors.primaryColor500,
     borderRadius: moderateScale(30),
   },

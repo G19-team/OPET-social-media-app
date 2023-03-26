@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 50,
     borderColor: Colors.primaryColor200,
-    borderWidth: 0.4,
+    borderWidth: 1,
   },
   userName: {
     textAlign: "center",
@@ -81,12 +81,11 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   addbtnContainer: {
-    borderWidth: 1,
     backgroundColor: "#4c68d7",
     width: 30,
     height: 30,
     borderRadius: 50,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: "FFFFFF",
     justifyContent: "center",
     alignItems: "center",
