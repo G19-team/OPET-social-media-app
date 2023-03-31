@@ -5,8 +5,9 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 
 import { Video, AVPlaybackStatus } from "expo-av";
 import FitImage from "react-native-fit-image";
@@ -51,8 +52,15 @@ const PostView = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(null);
   const [orgId, setOrgId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData(orgId);
+    setRefreshing(false);
+  };
+
+  useLayoutEffect(() => {
     const id = AsyncStorage.getItem("orgId")
       .then((id) => {
         setOrgId(id);
@@ -94,6 +102,12 @@ const PostView = ({ navigation }) => {
     <>
       <View style={{ flex: 1, zIndex: -2 }}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           data={data}

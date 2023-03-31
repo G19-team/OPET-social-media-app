@@ -5,8 +5,6 @@ import {
   Image,
   ImageBackground,
   ScrollView,
-  Button,
-  Alert,
 } from "react-native";
 
 import {
@@ -72,7 +70,6 @@ this is an social media application of office`;
               navigation.navigate("OrganizationRegister_Screen");
             }}
           />
-          <Button title="debuge" onPress={() => Alert.alert("hi")} />
         </View>
       </ScrollView>
 

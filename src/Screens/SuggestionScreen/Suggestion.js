@@ -1,4 +1,11 @@
-import { FlatList, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { Button, TextInput } from "react-native-paper";
 import alert from "../../Utills/alert";
@@ -24,6 +31,7 @@ const Suggestion = ({ route }) => {
 
   const [suggestion, setSuggestion] = useState(null);
   const [data, setData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const postRef = doc(
     db,
     "organization",
@@ -34,22 +42,32 @@ const Suggestion = ({ route }) => {
     postId
   );
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+    setRefreshing(false);
+  };
+
   useLayoutEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     const unsubscribe = onSnapshot(postRef, (docSnapshot) => {
       const field = docSnapshot.data().suggestions;
       setData(
-        field.map((data, index) => ({
-          id: index,
-          postId: data.postId,
-          senderId: data.senderId,
-          receiverId: data.receiverId,
-          suggestion: data.suggestion,
-        }))
+        field
+          .map((data, index) => ({
+            id: index,
+            postId: data.postId,
+            senderId: data.senderId,
+            receiverId: data.receiverId,
+            suggestion: data.suggestion,
+          }))
+          .reverse()
       );
     });
-
-    return () => unsubscribe();
-  }, []);
+  };
 
   const sendSuggestion = async () => {
     if (!suggestion) {
@@ -67,10 +85,15 @@ const Suggestion = ({ route }) => {
   };
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ marginBottom: 110 }}>
+      <View style={{ marginBottom: 110, flex: 1 }}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
           showsVerticalScrollIndicator={false}
-          inverted
           data={data}
           keyExtractor={(data) => data.id}
           renderItem={({ item }) => (

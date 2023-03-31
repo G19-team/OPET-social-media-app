@@ -1,9 +1,11 @@
-import { View, Text, Alert } from "react-native";
+import { View, Text } from "react-native";
 import React, { useState } from "react";
 
 import { styles } from "./Style";
 
 import LbInputBox from "../../Components/LbInputBox";
+
+import alert from "../../Utills/alert";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MyButton from "../../Components/MyButton";
@@ -16,6 +18,7 @@ import { setDoc, doc } from "firebase/firestore";
 import FitImage from "react-native-fit-image";
 
 import * as ImagePicker from "expo-image-picker";
+import { sendEmail } from "../../Utills/Mailer";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgname, setorgname] = useState("");
@@ -26,6 +29,18 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgusername, setorgusername] = useState("");
   const [orgpassword, setorgpassword] = useState("");
   const [orgImage, setImage] = useState("");
+
+  const sendMail = (orgName, toEmail, subject, orgId, userName, password) => {
+    sendEmail(
+      orgName,
+      toEmail,
+      subject,
+      orgId,
+      userName,
+      password,
+      "d-37a62b287b0f446caf297f63fa04ef9e"
+    );
+  };
 
   const clearAll = () => {
     setorgname("");
@@ -63,18 +78,25 @@ const OrganizationRegister_Screen = ({ navigation }) => {
     }).then(() => {
       navigation.replace("Start_Screen");
       clearAll();
-      Alert.alert(
+      alert(
         "Registered",
-        "your organization successfully registered in OPET \n" +
-          "organization ID :- " +
-          nodeId
+        "you will receive email about your credanitials soon, please check your emails"
+      );
+
+      sendMail(
+        orgname,
+        orgemail,
+        "Login Credentials for Admin Panel on OPET",
+        nodeId,
+        orgemail,
+        orgpassword
       );
     });
   };
 
   const picupload = async () => {
     if (!orgImage) {
-      Alert.alert("hello bhai!!");
+      alert("Please select your organization logo");
       return 0;
     }
     const filename = orgImage.substring(orgImage.lastIndexOf("/") + 1);
@@ -86,19 +108,9 @@ const OrganizationRegister_Screen = ({ navigation }) => {
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        if ((snapshot.bytesTransferred / snapshot.totalBytes) * 100 == 100) {
-          Alert.alert(
-            "Successfully completed",
-            "your image  is successfully uploaded"
-          );
-        }
-      },
+      (snapshot) => {},
       (error) => {
-        Alert.alert(
-          "Failed to upload",
-          "tamro vak che atle error to ave she j ne bhai "
-        );
+        alert("Failed to upload", "Something went wrong please try again...");
       },
       () => {
         //getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>{}

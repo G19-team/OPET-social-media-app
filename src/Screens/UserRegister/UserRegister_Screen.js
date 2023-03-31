@@ -76,6 +76,7 @@ const UserRegister_Screen = ({ navigation }) => {
       Password: password,
       OrganizationID: orgid,
       UserImage: firebaseImageUrl,
+      isAllowed: 1,
       StoryUrl: null,
     })
       .then(() => {
