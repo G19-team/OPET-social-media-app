@@ -65,4 +65,30 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#ffffff",
   },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+  },
+
+  error: {
+    color: "red",
+    marginBottom: 10,
+  },
+  lable: {
+    opacity: 0.5,
+    fontSize: scale(14),
+  },
+  picker: {
+    marginVertical: moderateScale(8),
+    borderRadius: moderateScale(3),
+  },
+  innerpicker: {
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
+    elevation: 5,
+    marginVertical: moderateScale(5),
+    paddingHorizontal: moderateScale(12),
+    paddingVertical: moderateScale(10),
+    flexDirection: "row",
+  },
 });

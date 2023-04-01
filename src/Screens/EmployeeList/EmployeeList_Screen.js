@@ -62,18 +62,6 @@ const EmployeeList_Screen = () => {
     });
   };
 
-  const data1 = [
-    { id: 1, name: "John Brahm", designation: "Project Manager" },
-    { id: 2, name: "Tom Jack", designation: "Software Engineer" },
-    { id: 3, name: "Mark Bell", designation: "QA Engineer" },
-    { id: 4, name: "Marshall Doe", designation: "Software Engineer" },
-    { id: 5, name: "John Dow", designation: "Product Manager" },
-    { id: 6, name: "Harry Jam", designation: "Team Lead" },
-    { id: 7, name: "Oliver James", designation: "Graphic Designer" },
-    { id: 8, name: "Ella Avery", designation: "QA Engineer" },
-    { id: 9, name: "William Thomas", designation: "Graphic Designer" },
-    { id: 10, name: "Edward Brian", designation: "Team Lead" },
-  ];
   return (
     <View style={styles.container}>
       <FlatList
@@ -104,10 +92,20 @@ const EmployeeList_Screen = () => {
                   }}
                   resizeMode="contain"
                 />
-                <Text style={styles.heading2}>
-                  {item.data.Lastname} {item.data.Firstname}{" "}
-                  {item.data.Middlename}
-                </Text>
+                <View style={{ flexDirection: "column" }}>
+                  <Text style={styles.heading2}>
+                    {item.data.Lastname} {item.data.Firstname}{" "}
+                    {item.data.Middlename}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.heading2,
+                      { opacity: 0.6, fontSize: 13, marginTop: 3 },
+                    ]}
+                  >
+                    {item.data.Role} : {item.data.Subrole}
+                  </Text>
+                </View>
               </Animatable.View>
             </TouchableOpacity>
           );

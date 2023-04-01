@@ -287,56 +287,37 @@ const Post = ({ data, postId, orgId, index }) => {
             {data.caption}
           </Text>
         </View>
-        <View style={styles.postcontent}>
-          {data.fileType.split("/")[0] === "image" && (
-            <FitImage source={{ uri: data.URL }} resizeMode="cover" />
-          )}
-          {data.fileType.split("/")[0] === "document" && (
-            <TouchableOpacity
-              onPress={() => {
-                OpenAnything.Pdf(data.URL);
-                // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
-              }}
-            >
-              <DocumentView
-                type={data.fileType.split("/").slice(1).join("/")}
-                name={data.fileName}
-                // size={200000}
+        {data.fileType && (
+          <View style={styles.postcontent}>
+            {data.fileType.split("/")[0] === "image" && (
+              <FitImage source={{ uri: data.URL }} resizeMode="cover" />
+            )}
+            {data.fileType.split("/")[0] === "document" && (
+              <TouchableOpacity
+                onPress={() => {
+                  OpenAnything.Pdf(data.URL);
+                  // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
+                }}
+              >
+                <DocumentView
+                  type={data.fileType.split("/").slice(1).join("/")}
+                  name={data.fileName}
+                  // size={200000}
+                />
+              </TouchableOpacity>
+            )}
+            {data.fileType.split("/")[0] === "video" && (
+              <Video
+                style={{ height: 250 }}
+                resizeMode="contain"
+                source={{
+                  uri: data.URL,
+                }}
+                useNativeControls
               />
-            </TouchableOpacity>
-          )}
-          {data.fileType.split("/")[0] === "video" && (
-            <Video
-              style={{ height: 250 }}
-              resizeMode="contain"
-              source={{
-                uri: data.URL,
-              }}
-              useNativeControls
-            />
-          )}
-          {data.fileType === null && null}
-          {/* {data.fileType === "image" ? (
-            <FitImage
-              source={{ uri: data.URL }}
-              resizeMode="cover"
-              style={styles.postcontent}
-            />
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                OpenAnything.Pdf(data.URL);
-                // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
-              }}
-            >
-              <DocumentView
-                type={data.fileType}
-                name={data.fileName}
-                size={1.121212}
-              />
-            </TouchableOpacity>
-          )} */}
-        </View>
+            )}
+          </View>
+        )}
         <View style={styles.postfooter}>
           <View style={styles.postoptions}>
             <TouchableOpacity
