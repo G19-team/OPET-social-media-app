@@ -1,15 +1,20 @@
-import { StyleSheet, View, Image, Platform } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import { StatusBar } from "react-native";
+import "react-native-gesture-handler";
 import { Colors } from "./src/Assets/Colors/Colors";
 import { registerRootComponent } from "expo";
-
 import StackNav from "./src/Navigation/StackNav";
-import UploadPost_Screen from "./src/Screens/UploadPost/UploadPost_Screen";
+
+import { NavigationContainer } from "@react-navigation/native";
+
+import React from "react";
 
 function App() {
   return (
     <View style={styles.container}>
-      <StackNav />
+      <NavigationContainer>
+        <StackNav />
+      </NavigationContainer>
       <StatusBar backgroundColor={Colors.primaryColor500} />
     </View>
   );

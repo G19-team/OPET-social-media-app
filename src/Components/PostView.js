@@ -102,6 +102,7 @@ const PostView = ({ navigation }) => {
     <>
       <View style={{ flex: 1, zIndex: -2 }}>
         <FlatList
+          ref={ref}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -187,9 +188,7 @@ const Post = ({ data, postId, orgId, index }) => {
       //if user only uploaded caption(text) then we dont have to delete any file from storage.
       if (data.fileType != null) {
         const fileRef = ref(storage, data.URL);
-        await deleteObject(fileRef).then(() =>
-          alert("Post deleted", "Your post has been deleted")
-        );
+        await deleteObject(fileRef);
       } else {
         alert("Post deleted", "Your post has been deleted");
       }
@@ -344,15 +343,7 @@ const Post = ({ data, postId, orgId, index }) => {
                   ? "like"
                   : "likes"}
               </Text>
-              {/* <Ionicons
-                name="thumbs-up-outline"
-                size={moderateScale(25)}
-                color={
-                  data.likes.includes(auth.currentUser.uid)
-                    ? "#9000ff"
-                    : "black"
-                }
-              /> */}
+   
               <Icon
                 name={
                   data.likes.includes(auth.currentUser.uid)
@@ -439,7 +430,7 @@ const styles = StyleSheet.create({
     margin: moderateVerticalScale(10),
     borderRadius: moderateScale(20),
     backgroundColor: "#f8f8f8",
-    elevation: 3.5,
+    elevation: 1,
     zIndex: -1,
   },
   postheader: {

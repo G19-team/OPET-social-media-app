@@ -7,6 +7,7 @@ import Home_Screen from "../Screens/Home/Home_Screen";
 import UploadPost_Screen from "../Screens/UploadPost/UploadPost_Screen";
 import EmployeeList_Screen from "../Screens/EmployeeList/EmployeeList_Screen";
 import Profile_Screen from "../Screens/Profile/Profile_Screen";
+import DrawerNav from "./DrawerNav";
 
 //Icon library
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -114,9 +115,10 @@ const HomeNav = () => {
           }}
         />
         <Tab.Screen
-          name="Profile_Screen"
-          component={Profile_Screen}
+          name="DrawerNav"
+          component={DrawerNav}
           options={{
+            headerShown: false,
             title: "Profile",
             tabBarIcon: ({ size, color, focused }) => (
               <Ionicons

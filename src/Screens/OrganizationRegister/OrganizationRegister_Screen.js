@@ -72,9 +72,10 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       OrganizationContactNumber: orgconnum,
       Address: orgadd,
       AboutOrganization: orgabout,
-      Username: orgusername,
+      Username: orgemail,
       Password: orgpassword,
       Picture: firebaseImageUrl,
+      OrgId: nodeId,
     }).then(() => {
       navigation.replace("Start_Screen");
       clearAll();
@@ -190,7 +191,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       <LbInputBox
         lable="Username :"
         outstyle={styles.lblinput}
-        onChangeText={(text) => setorgusername(text)}
+        onChangeText={(text) => setorgemail(text)}
         value={orgemail}
       />
       <LbInputBox

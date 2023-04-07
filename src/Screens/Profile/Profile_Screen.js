@@ -10,8 +10,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import MyButton from "../../Components/MyButton";
-
 const Profile_Screen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -36,7 +34,7 @@ const Profile_Screen = ({ navigation }) => {
               navigation.navigate("EditProfile_Screen");
             }}
           >
-            <Text style={styles.userBtnTxt}>edit your profile</Text>
+            <Text style={styles.userBtnTxt}>Edit your profile</Text>
           </TouchableOpacity>
         </View>
 

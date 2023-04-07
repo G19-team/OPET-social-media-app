@@ -18,7 +18,11 @@ import MyButton from "../../Components/MyButton";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // it is the fb
-import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import { auth } from "../../db/firebaseConfig";
 import alert from "../../Utills/alert";
 
@@ -32,27 +36,33 @@ const LogIn_Screen = ({ navigation }) => {
     Password: "",
   });
 
-  const login = () => {
-    signInWithEmailAndPassword(
-      auth,
-      logInDetails.UserName,
-      logInDetails.Password
-    )
-      .then((userCredential) => {
-        const user = userCredential.user;
-        AsyncStorage.setItem("orgId", logInDetails.organizationID);
-        navigation.replace("HomeNav");
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        if (errorMessage === "Firebase: Error (auth/invalid-email).") {
-          alert("Warning!", "your email address is wrong");
-        } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
-          alert("Warning!", "your password is wrong");
-        } else {
-          alert("Warning!", error);
-        }
-      });
+  const login = async () => {
+    // setPersistence(auth, browserLocalPersistence).then(async (data) => {
+    //   console.log(data);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        logInDetails.UserName,
+        logInDetails.Password
+      );
+      const user = userCredential.user;
+      AsyncStorage.setItem("orgId", logInDetails.organizationID);
+      AsyncStorage.setItem("usrName", logInDetails.UserName);
+      AsyncStorage.setItem("password", logInDetails.Password);
+      navigation.navigate("HomeNav");
+    } catch (error) {
+      const errorMessage = error.message;
+      if (errorMessage === "Firebase: Error (auth/invalid-email).") {
+        alert("Warning!", "your email address is wrong");
+      } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
+        alert("Warning!", "your password is wrong");
+      } else if (errorMessage === "Firebase: Error (auth/user-not-found).") {
+        alert("Warning!", "your account doest exist");
+      } else {
+        alert("Warning!", "Something went wrong");
+      }
+    }
+    // });
   };
 
   return (
