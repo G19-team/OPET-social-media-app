@@ -53,10 +53,10 @@ const AboutOrganization_Screen = () => {
             <Text style={styles.subheading}>About your organization: </Text>
             <Text style={styles.text}>{orgData.data.AboutOrganization}</Text>
           </View>
-          <View style={styles.content}>
+         ` <View style={styles.content}>
             <Text style={styles.subheading}>Address: </Text>
             <Text style={styles.text}>{orgData.data.Address}</Text>
-          </View>
+          </View>`
         </View>
       )}
     </ScrollView>
