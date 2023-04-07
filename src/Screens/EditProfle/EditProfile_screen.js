@@ -248,8 +248,6 @@ const EditProfile_Screen = () => {
   );
 };
 
-export default EditProfile_Screen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -331,3 +329,5 @@ const styles = StyleSheet.create({
     color: "#05375a",
   },
 });
+
+export default EditProfile_Screen;

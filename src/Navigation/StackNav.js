@@ -3,6 +3,7 @@ import Start_Screen from "../Screens/StartScreen/Start_Screen";
 import LogIn_Screen from "../Screens/Login/LogIn_Screen";
 import UserRegister_Screen from "../Screens/UserRegister/UserRegister_Screen";
 import OrganizationRegister_Screen from "../Screens/OrganizationRegister/OrganizationRegister_Screen";
+// import EditProfile_Screen from "../Screens/EditProfle/EditProfile_Screen";
 import EditProfile_Screen from "../Screens/EditProfle/EditProfile_Screen";
 import DocumentViewer_Screen from "../Screens/DocumentVIewer/DocumentViewer_Screen";
 import Suggestion from "../Screens/SuggestionScreen/Suggestion";
@@ -55,6 +56,7 @@ const StackNav = ({ isUserLoggedIn }) => {
         component={OrganizationRegister_Screen}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen
         name={"EditProfile_Screen"}
         component={EditProfile_Screen}
