@@ -19,12 +19,12 @@ const AuthLoading_Screen = ({ navigation }) => {
             usrName,
             password
           );
-          navigation.navigate("HomeNav");
+          navigation.replace("HomeNav");
         } catch (error) {
-          navigation.navigate("Start_Screen");
+          navigation.replace("Start_Screen");
         }
       } else {
-        navigation.navigate("Start_Screen");
+        navigation.replace("Start_Screen");
       }
     };
     init();

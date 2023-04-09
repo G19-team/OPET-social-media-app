@@ -75,6 +75,7 @@ const DrawerNav = ({ navigation }) => {
           drawerIcon: ({ size, color }) => {
             return <Icon name="office-building" color={color} size={size} />;
           },
+          sceneContainerStyle: { backgroundColor: Colors.primaryColor500 },
         }}
       />
     </Drawer.Navigator>

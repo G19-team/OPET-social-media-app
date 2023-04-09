@@ -56,15 +56,13 @@ const Suggestion = ({ route }) => {
     const unsubscribe = onSnapshot(postRef, (docSnapshot) => {
       const field = docSnapshot.data().suggestions;
       setData(
-        field
-          .map((data, index) => ({
-            id: index,
-            postId: data.postId,
-            senderId: data.senderId,
-            receiverId: data.receiverId,
-            suggestion: data.suggestion,
-          }))
-          .reverse()
+        field.map((data, index) => ({
+          id: index,
+          postId: data.postId,
+          senderId: data.senderId,
+          receiverId: data.receiverId,
+          suggestion: data.suggestion,
+        }))
       );
     });
   };

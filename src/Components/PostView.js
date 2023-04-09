@@ -295,7 +295,6 @@ const Post = ({ data, postId, orgId, index }) => {
               <TouchableOpacity
                 onPress={() => {
                   OpenAnything.Pdf(data.URL);
-                  // navigation.navigate("DocumentViewer_Screen", { url: data.URL });
                 }}
               >
                 <DocumentView
@@ -343,7 +342,7 @@ const Post = ({ data, postId, orgId, index }) => {
                   ? "like"
                   : "likes"}
               </Text>
-   
+
               <Icon
                 name={
                   data.likes.includes(auth.currentUser.uid)
