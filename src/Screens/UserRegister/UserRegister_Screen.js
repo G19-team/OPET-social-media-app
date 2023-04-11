@@ -41,7 +41,7 @@ const UserRegister_Screen = ({ navigation }) => {
   const [orgid, setorgid] = useState(null);
   const [usrImage, setUsrImage] = useState(null);
   const [selectrole, setselectrole] = useState("leader");
-  const [selectsubrole, setselectsubrole] = useState(null);
+  const [selectsubrole, setselectsubrole] = useState("Manager");
 
   //const [loading, setLoading] = React.useState(false);
   const [usrImageError, setUsrImageError] = useState(null);

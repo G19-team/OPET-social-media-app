@@ -65,4 +65,12 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#ffffff",
   },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+  },
+  error: {
+    color: "red",
+    marginBottom: 10,
+  },
 });

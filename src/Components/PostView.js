@@ -33,6 +33,7 @@ import * as Animatable from "react-native-animatable";
 import { db, auth, storage } from "../db/firebaseConfig";
 import {
   doc,
+  getDoc,
   deleteDoc,
   query,
   onSnapshot,
@@ -53,6 +54,8 @@ const PostView = ({ navigation }) => {
   const [data, setData] = useState(null);
   const [orgId, setOrgId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  let Role = "";
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -85,6 +88,12 @@ const PostView = ({ navigation }) => {
           .reverse()
       );
     });
+    getDoc(doc(db, "organization", orgId, "users", auth.currentUser.uid)).then(
+      (data) => {
+        console.log(data.data().Role);
+        Role = data.data().Role;
+      }
+    );
     setIsLoading(false);
   };
 
@@ -118,6 +127,7 @@ const PostView = ({ navigation }) => {
               index={index}
               postId={item.id}
               orgId={orgId}
+              Role={Role}
               style={{ zIndex: -1 }}
             />
           )}
@@ -170,7 +180,7 @@ const PostView = ({ navigation }) => {
 
 export default PostView;
 
-const Post = ({ data, postId, orgId, index }) => {
+const Post = ({ data, postId, orgId, index, Role }) => {
   const postRef = doc(
     db,
     "organization",
@@ -180,6 +190,8 @@ const Post = ({ data, postId, orgId, index }) => {
     "posts",
     postId
   );
+
+  console.log(Role);
 
   const deletePost = async () => {
     try {
@@ -248,7 +260,7 @@ const Post = ({ data, postId, orgId, index }) => {
 
             <Text style={styles.name}>{data.username}</Text>
           </View>
-          {data.userId == auth.currentUser.uid && (
+          {(data.userId === auth.currentUser.uid || Role == "leader") && (
             <TouchableOpacity
               onPress={(postRef, url = data.URL) =>
                 alert(
@@ -311,7 +323,7 @@ const Post = ({ data, postId, orgId, index }) => {
                 source={{
                   uri: data.URL,
                 }}
-                useNativeControls
+                useNativeControls={true}
               />
             )}
           </View>

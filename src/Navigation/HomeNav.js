@@ -42,6 +42,7 @@ const HomeNav = () => {
         backgroundColor={Colors.primaryColor500}
       />
       <Tab.Navigator
+        initialRouteName="Home_Screen"
         screenOptions={{
           tabBarActiveTintColor: Colors.primaryColor50,
           headerTitleStyle: {

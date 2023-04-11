@@ -30,6 +30,16 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgpassword, setorgpassword] = useState("");
   const [orgImage, setImage] = useState("");
 
+  //Error states
+  const [orgnameError, setorgnameError] = useState("");
+  const [orgemailError, setorgemailError] = useState("");
+  const [orgconnumError, setorgconnumError] = useState("");
+  const [orgaddError, setorgaddError] = useState("");
+  const [orgaboutError, setorgaboutError] = useState("");
+  const [orgusernameError, setorgusernameError] = useState("");
+  const [orgpasswordError, setorgpasswordError] = useState("");
+  const [orgImageError, setImageError] = useState("");
+
   const sendMail = (orgName, toEmail, subject, orgId, userName, password) => {
     sendEmail(
       orgName,
@@ -95,6 +105,86 @@ const OrganizationRegister_Screen = ({ navigation }) => {
     });
   };
 
+  const handleSubmit = () => {
+    let error = false;
+    if (!orgemail) {
+      error = true;
+      setorgemailError("Please enter your email");
+    } else {
+      if (!/\S+@\S+\.\S+/.test(orgemail)) {
+        error = true;
+        setorgemailError("please enter vaild email");
+      } else {
+        error = false;
+        setorgemailError("");
+      }
+    }
+
+    if (!orgname) {
+      error = true;
+      setorgnameError("Please enter your org name  ");
+    } else {
+      error = false;
+      setorgnameError("");
+    }
+
+    if (!orgconnum) {
+      error = true;
+      setorgconnumError("Please enter your org contact number  ");
+    } else {
+      error = false;
+      setorgconnumError("");
+    }
+    if (!orgadd) {
+      error = true;
+      setorgaddError("Please enter addressoa  ");
+    } else {
+      error = false;
+      setorgaddError("");
+    }
+
+    if (!orgabout) {
+      error = true;
+      setorgaboutError("Please enter your org about   ");
+    } else {
+      error = false;
+      setorgaboutError("");
+    }
+
+    if (!orgusername) {
+      error = true;
+      setorgusernameError("Please enter your username");
+    } else {
+      if (!/\S+@\S+\.\S+/.test(orgusername)) {
+        error = true;
+        setorgusernameError("please enter vaild email");
+      } else {
+        error = false;
+        setorgusernameError("");
+      }
+    }
+
+    if (!orgpassword) {
+      error = true;
+      setorgpasswordError("Please enter your  org password");
+    } else {
+      error = false;
+      setorgpasswordError("");
+    }
+
+    if (!orgImage) {
+      error = true;
+      setImageError("Please set your image");
+    } else {
+      error = false;
+      setImageError("");
+    }
+
+    if (!error) {
+      picupload();
+    }
+  };
+
   const picupload = async () => {
     if (!orgImage) {
       alert("Please select your organization logo");
@@ -139,6 +229,9 @@ const OrganizationRegister_Screen = ({ navigation }) => {
           ) : (
             <Ionicons name="person" size={30} color="#000000" />
           )}
+          {orgImageError ? (
+            <Text style={styles.error}>{orgImageError}</Text>
+          ) : null}
         </View>
         <View style={{ flexDirection: "row" }}>
           <MyButton
@@ -156,22 +249,31 @@ const OrganizationRegister_Screen = ({ navigation }) => {
 
       <LbInputBox
         lable="Organization Name :"
+        style={[orgnameError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgname(text)}
         value={orgname}
       />
+      {orgnameError ? <Text style={styles.error}>{orgnameError}</Text> : null}
       <LbInputBox
         lable="Organization E-mail :"
+        style={[orgemailError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgemail(text)}
         value={orgemail}
       />
+      {orgemailError ? <Text style={styles.error}>{orgemailError}</Text> : null}
       <LbInputBox
         lable="Organization Contact Number :"
+        style={[orgconnumError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgconnum(text)}
         value={orgconnum}
       />
+      {orgconnumError ? (
+        <Text style={styles.error}>{orgconnumError}</Text>
+      ) : null}
+
       <LbInputBox
         lable="Address :"
         outstyle={styles.lblinput}
@@ -181,32 +283,41 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       />
       <LbInputBox
         lable="About Organization :"
+        style={[orgaddError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgabout(text)}
         value={orgabout}
         multiline={true}
       />
+      {orgaddError ? <Text style={styles.error}>{orgaddError}</Text> : null}
 
       <Text style={styles.info}>Enter Username and Password</Text>
       <LbInputBox
         lable="Username :"
+        style={[orgaboutError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgemail(text)}
         value={orgemail}
       />
+      {orgaboutError ? <Text style={styles.error}>{orgaboutError}</Text> : null}
+
       <LbInputBox
         lable="Password :"
+        style={[orgpasswordError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgpassword(text)}
         value={orgpassword}
       />
+      {orgpasswordError ? (
+        <Text style={styles.error}>{orgpasswordError}</Text>
+      ) : null}
 
       <MyButton
         title="Register"
         style={styles.btn}
         fontStyle={styles.fontstyle}
         onPress={() => {
-          picupload();
+          handleSubmit();
         }}
       />
       <MyButton
