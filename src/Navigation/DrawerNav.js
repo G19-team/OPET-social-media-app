@@ -29,7 +29,7 @@ const DrawerNav = ({ navigation }) => {
         AsyncStorage.removeItem("orgId");
         AsyncStorage.removeItem("usrName");
         AsyncStorage.removeItem("password");
-        navigation.navigate("Start_Screen");
+        navigation.replace("Start_Screen");
       })
       .catch((error) => {
         alert("Error!", error);
@@ -95,8 +95,8 @@ const DrawerNav = ({ navigation }) => {
           }}
           onPress={() =>
             alert("Logout", "Are you sure you want to Logout?", [
-              { text: "No", style: "cancel" },
               { text: "Yes", style: "default", onPress: () => logOut() },
+              { text: "No", style: "cancel" },
             ])
           }
         >

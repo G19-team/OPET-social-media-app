@@ -18,11 +18,7 @@ import MyButton from "../../Components/MyButton";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // it is the fb
-import {
-  signInWithEmailAndPassword,
-  setPersistence,
-  browserLocalPersistence,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../db/firebaseConfig";
 import alert from "../../Utills/alert";
 
@@ -37,8 +33,6 @@ const LogIn_Screen = ({ navigation }) => {
   });
 
   const login = async () => {
-    // setPersistence(auth, browserLocalPersistence).then(async (data) => {
-    //   console.log(data);
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -50,14 +44,15 @@ const LogIn_Screen = ({ navigation }) => {
       AsyncStorage.setItem("usrName", logInDetails.UserName);
       AsyncStorage.setItem("password", logInDetails.Password);
       navigation.navigate("HomeNav");
+      setLogInDetails({ organizationID: "", UserName: "", Password: "" });
     } catch (error) {
       const errorMessage = error.message;
       if (errorMessage === "Firebase: Error (auth/invalid-email).") {
-        alert("Warning!", "your email address is wrong");
+        alert("Warning!", "Please check your user name");
       } else if (errorMessage === "Firebase: Error (auth/wrong-password).") {
-        alert("Warning!", "your password is wrong");
+        alert("Warning!", "Please check your password");
       } else if (errorMessage === "Firebase: Error (auth/user-not-found).") {
-        alert("Warning!", "your account doest exist");
+        alert("Warning!", "your account does't exist");
       } else {
         alert("Warning!", "Something went wrong");
       }
@@ -91,6 +86,7 @@ const LogIn_Screen = ({ navigation }) => {
               setLogInDetails({ ...logInDetails, organizationID: data })
             }
             keyboardType="number-pad"
+            value={logInDetails.organizationID}
             require
           />
           <LbInputBox
@@ -100,6 +96,7 @@ const LogIn_Screen = ({ navigation }) => {
             onChangeText={(data) =>
               setLogInDetails({ ...logInDetails, UserName: data })
             }
+            value={logInDetails.UserName}
             require
           />
           <LbInputBox
@@ -110,6 +107,7 @@ const LogIn_Screen = ({ navigation }) => {
             onChangeText={(data) =>
               setLogInDetails({ ...logInDetails, Password: data })
             }
+            value={logInDetails.Password}
             require
           />
 

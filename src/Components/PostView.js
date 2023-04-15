@@ -43,9 +43,11 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  collection,
 } from "firebase/firestore";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+import { ref, deleteObject } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FlashList } from "@shopify/flash-list";
 import MyButton from "./MyButton";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -54,8 +56,7 @@ const PostView = ({ navigation }) => {
   const [data, setData] = useState(null);
   const [orgId, setOrgId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-
-  let Role = "";
+  const [role, setRole] = useState("");
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -73,6 +74,11 @@ const PostView = ({ navigation }) => {
   }, []);
 
   const fetchData = async (id) => {
+    await getDoc(
+      doc(db, "organization", id, "users", auth.currentUser.uid)
+    ).then((role) => {
+      setRole(role.data().Role);
+    });
     const postQuery = query(
       collectionGroup(db, "posts"),
       where("orgId", "==", id.toString()),
@@ -88,12 +94,7 @@ const PostView = ({ navigation }) => {
           .reverse()
       );
     });
-    getDoc(doc(db, "organization", orgId, "users", auth.currentUser.uid)).then(
-      (data) => {
-        console.log(data.data().Role);
-        Role = data.data().Role;
-      }
-    );
+
     setIsLoading(false);
   };
 
@@ -110,24 +111,24 @@ const PostView = ({ navigation }) => {
   ) : (
     <>
       <View style={{ flex: 1, zIndex: -2 }}>
-        <FlatList
+        <FlashList
           ref={ref}
+          estimatedItemSize={463}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => onRefresh()}
             />
           }
-          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           data={data}
           renderItem={({ item, index }) => (
             <Post
               data={item.data}
               index={index}
+              role={role}
               postId={item.id}
               orgId={orgId}
-              Role={Role}
               style={{ zIndex: -1 }}
             />
           )}
@@ -180,7 +181,7 @@ const PostView = ({ navigation }) => {
 
 export default PostView;
 
-const Post = ({ data, postId, orgId, index, Role }) => {
+const Post = ({ data, postId, orgId, index, role }) => {
   const postRef = doc(
     db,
     "organization",
@@ -190,8 +191,6 @@ const Post = ({ data, postId, orgId, index, Role }) => {
     "posts",
     postId
   );
-
-  console.log(Role);
 
   const deletePost = async () => {
     try {
@@ -226,19 +225,26 @@ const Post = ({ data, postId, orgId, index, Role }) => {
   };
 
   const dislikeThePost = async () => {
-    const likeStatus = data.likes.includes(auth.currentUser.uid);
-    const dislikeStatus = data.dislikes.includes(auth.currentUser.uid);
-    //if user liked the post then remove it
-    if (likeStatus == true) {
-      await updateDoc(postRef, { likes: arrayRemove(auth.currentUser.uid) });
-    }
+    if (role === "leader") {
+      const likeStatus = data.likes.includes(auth.currentUser.uid);
+      const dislikeStatus = data.dislikes.includes(auth.currentUser.uid);
+      //if user liked the post then remove it
+      if (likeStatus == true) {
+        await updateDoc(postRef, { likes: arrayRemove(auth.currentUser.uid) });
+      }
 
-    await updateDoc(
-      postRef,
-      dislikeStatus
-        ? { dislikes: arrayRemove(auth.currentUser.uid) }
-        : { dislikes: arrayUnion(auth.currentUser.uid.toString()) }
-    );
+      await updateDoc(
+        postRef,
+        dislikeStatus
+          ? { dislikes: arrayRemove(auth.currentUser.uid) }
+          : { dislikes: arrayUnion(auth.currentUser.uid.toString()) }
+      );
+    } else {
+      alert(
+        "Disliking Not Available for Employees",
+        "As an employee, you do not have the option to dislike posts"
+      );
+    }
   };
 
   const navigation = useNavigation();
@@ -260,7 +266,7 @@ const Post = ({ data, postId, orgId, index, Role }) => {
 
             <Text style={styles.name}>{data.username}</Text>
           </View>
-          {(data.userId === auth.currentUser.uid || Role == "leader") && (
+          {data.userId === auth.currentUser.uid && (
             <TouchableOpacity
               onPress={(postRef, url = data.URL) =>
                 alert(
@@ -284,20 +290,19 @@ const Post = ({ data, postId, orgId, index, Role }) => {
             </TouchableOpacity>
           )}
         </View>
-        <View style={styles.postcaption}>
-          {/* <Text style={{ fontWeight: "bold", fontSize: scale(16) }}>
-            Description :
-          </Text> */}
-          <Text
-            style={{
-              opacity: 10.7,
-              includeFontPadding: true,
-              fontSize: moderateScale(14),
-            }}
-          >
-            {data.caption}
-          </Text>
-        </View>
+        {data.caption && (
+          <View style={styles.postcaption}>
+            <Text
+              style={{
+                opacity: 10.7,
+                includeFontPadding: true,
+                fontSize: moderateScale(14),
+              }}
+            >
+              {data.caption}
+            </Text>
+          </View>
+        )}
         {data.fileType && (
           <View style={styles.postcontent}>
             {data.fileType.split("/")[0] === "image" && (
@@ -419,6 +424,7 @@ const Post = ({ data, postId, orgId, index, Role }) => {
                   postId: postId,
                   userId: data.userId,
                   orgId: orgId,
+                  role: role,
                 })
               }
             >

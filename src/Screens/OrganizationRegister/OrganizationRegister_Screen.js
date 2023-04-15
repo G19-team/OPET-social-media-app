@@ -151,11 +151,11 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       setorgaboutError("");
     }
 
-    if (!orgusername) {
+    if (!orgemail) {
       error = true;
       setorgusernameError("Please enter your username");
     } else {
-      if (!/\S+@\S+\.\S+/.test(orgusername)) {
+      if (!/\S+@\S+\.\S+/.test(orgemail)) {
         error = true;
         setorgusernameError("please enter vaild email");
       } else {
@@ -168,8 +168,13 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       error = true;
       setorgpasswordError("Please enter your  org password");
     } else {
-      error = false;
-      setorgpasswordError("");
+      if (orgpassword.length < 6) {
+        error = true;
+        setorgpasswordError("Password must be of 6 length");
+      } else {
+        error = false;
+        setorgpasswordError("");
+      }
     }
 
     if (!orgImage) {
@@ -229,10 +234,10 @@ const OrganizationRegister_Screen = ({ navigation }) => {
           ) : (
             <Ionicons name="person" size={30} color="#000000" />
           )}
-          {orgImageError ? (
-            <Text style={styles.error}>{orgImageError}</Text>
-          ) : null}
         </View>
+        {orgImageError ? (
+          <Text style={[styles.error, { marginLeft: 0 }]}>{orgImageError}</Text>
+        ) : null}
         <View style={{ flexDirection: "row" }}>
           <MyButton
             title="choose logo"
@@ -277,10 +282,12 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       <LbInputBox
         lable="Address :"
         outstyle={styles.lblinput}
+        style={[orgaddError && styles.inputError]}
         onChangeText={(text) => setorgadd(text)}
         value={orgadd}
         multiline={true}
       />
+      {orgaddError ? <Text style={styles.error}>{orgaddError}</Text> : null}
       <LbInputBox
         lable="About Organization :"
         style={[orgaddError && styles.inputError]}
@@ -289,8 +296,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         value={orgabout}
         multiline={true}
       />
-      {orgaddError ? <Text style={styles.error}>{orgaddError}</Text> : null}
-
+      {orgaboutError ? <Text style={styles.error}>{orgaboutError}</Text> : null}
       <Text style={styles.info}>Enter Username and Password</Text>
       <LbInputBox
         lable="Username :"
@@ -299,7 +305,9 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         onChangeText={(text) => setorgemail(text)}
         value={orgemail}
       />
-      {orgaboutError ? <Text style={styles.error}>{orgaboutError}</Text> : null}
+      {orgusernameError ? (
+        <Text style={styles.error}>{orgusernameError}</Text>
+      ) : null}
 
       <LbInputBox
         lable="Password :"

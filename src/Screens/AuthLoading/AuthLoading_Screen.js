@@ -19,7 +19,7 @@ const AuthLoading_Screen = ({ navigation }) => {
             usrName,
             password
           );
-          navigation.replace("HomeNav");
+          await navigation.replace("HomeNav");
         } catch (error) {
           navigation.replace("Start_Screen");
         }

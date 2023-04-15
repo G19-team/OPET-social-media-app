@@ -24,7 +24,7 @@ import { auth } from "../../db/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //image , video and document picker library.
 import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from "expo-document-picker";
+import * as ExpoDocumentPicker from "expo-document-picker";
 import { Video, AVPlaybackStatus } from "expo-av";
 
 //library to display image perfectly.
@@ -217,20 +217,31 @@ const UploadPost_Screen = ({ navigation }) => {
 
   //pickDoc is a function, which open file picker for user.
   const pickDoc = async () => {
-    let result = await DocumentPicker.getDocumentAsync({
-      copyToCacheDirectory: true,
+    let result = await ExpoDocumentPicker.getDocumentAsync({
       type: [
         "application/pdf",
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/zip",
+        "application/x-httpd-php",
+        "text/javascript",
+        "text/html",
+        "text/css",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/xml",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       ],
     })
       .then((result) => {
-        if (!(result?.type == "cancel")) {
+        if (!result?.canceled) {
+          console.log(result);
           setFileResult(result);
         }
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   //pickImage is a function, which open image picker for user.

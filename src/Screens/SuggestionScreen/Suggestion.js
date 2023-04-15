@@ -28,6 +28,7 @@ const Suggestion = ({ route }) => {
   const orgId = route.params.orgId;
   const userId = route.params.userId;
   const postId = route.params.postId;
+  const role = route.params.role;
 
   const [suggestion, setSuggestion] = useState(null);
   const [data, setData] = useState(null);
@@ -99,23 +100,37 @@ const Suggestion = ({ route }) => {
           )}
         />
       </View>
-      <View style={{ position: "absolute", bottom: 5, width: "100%" }}>
-        <TextInput
-          mode="outlined"
-          placeholder="Give your suggestion"
-          style={{ borderRadius: 20 }}
-          multiline={true}
-          onChangeText={(data) => setSuggestion(data)}
-          value={suggestion}
-        />
-        <Button
-          mode="contained"
-          style={{ backgroundColor: "#E0BAFD", marginTop: 10 }}
-          onPress={() => sendSuggestion()}
+      {role === "leader" ? (
+        <View style={{ position: "absolute", bottom: 5, width: "100%" }}>
+          <TextInput
+            mode="outlined"
+            placeholder="Give your suggestion"
+            style={{ borderRadius: 20 }}
+            multiline={true}
+            onChangeText={(data) => setSuggestion(data)}
+            value={suggestion}
+          />
+          <Button
+            mode="contained"
+            style={{ backgroundColor: "#E0BAFD", marginTop: 10 }}
+            onPress={() => sendSuggestion()}
+          >
+            Suggest
+          </Button>
+        </View>
+      ) : (
+        <View
+          style={{
+            borderTopWidth: 1,
+            width: "100%",
+            padding: 12,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          Suggest
-        </Button>
-      </View>
+          <Text>Employees are not allowed to suggest on posts </Text>
+        </View>
+      )}
     </View>
   );
 };

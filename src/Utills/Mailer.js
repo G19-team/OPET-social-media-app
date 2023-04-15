@@ -1,4 +1,5 @@
 import axios from "axios";
+import alert from "./alert";
 
 export const sendEmail = async (
   orgName,
@@ -10,7 +11,7 @@ export const sendEmail = async (
   templateId
 ) => {
   const apiKey =
-    "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";
+    "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";
   const url = "https://api.sendgrid.com/v3/mail/send";
 
   const data = {
@@ -40,6 +41,9 @@ export const sendEmail = async (
     });
     console.log("Email sent:", response.data);
   } catch (error) {
-    console.log("Error sending email:", error);
+    alert(
+      "May be API error",
+      "Please contact developer of this application for the api key to send emails"
+    );
   }
 };

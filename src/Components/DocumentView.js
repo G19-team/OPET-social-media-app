@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   moderateScale,
   moderateVerticalScale,
@@ -14,28 +14,100 @@ const DocumentView = ({ type, name, size }) => {
 
   const docSize = (size / 1000000).toFixed(2);
 
-  useEffect(() => {
-    if (type == "application/pdf") {
-      setDocType({
-        type: "pdf",
-        path: require("../Assets/Icons/Pdf-icon.png"),
-        lightColor: "lightgray",
-        darkColor: "#FF1700",
-      });
-    } else if (
-      type == "application/msword" ||
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      setDocType({
-        type: "doc",
-        path: require("../Assets/Icons/Doc-icon.png"),
-        lightColor: "lightgray",
-        darkColor: "#2B3467",
-      });
-    } else {
-      setDocType(null);
+  useLayoutEffect(() => {
+    switch (type) {
+      case "application/pdf":
+        setDocType({
+          type: "pdf",
+          path: require("../Assets/Icons/Pdf-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#FF1700",
+        });
+        break;
+      case "application/msword":
+        setDocType({
+          type: "doc",
+          path: require("../Assets/Icons/Doc-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#2B3467",
+        });
+        break;
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        setDocType({
+          type: "doc",
+          path: require("../Assets/Icons/Doc-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#2B3467",
+        });
+        break;
+      case "application/zip":
+        setDocType({
+          type: "zip",
+          path: require("../Assets/Icons/Zip-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#FFB11F",
+        });
+        break;
+      case "application/x-httpd-php":
+        setDocType({
+          type: "php",
+          path: require("../Assets/Icons/Php-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#CFD2FC",
+        });
+        break;
+      case "text/javascript":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Js-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#FFB11F",
+        });
+        break;
+      case "text/html":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Html-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#FF694B",
+        });
+        break;
+      case "text/css":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Css-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#6EAADC",
+        });
+        break;
+      case "application/vnd.ms-powerpoint":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Ppt-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#FF1700",
+        });
+        break;
+      case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Xml-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#F29C1F",
+        });
+        break;
+      case "application/xml":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/Xml-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#F29C1F",
+        });
+        break;
+      default:
+        console.log("none");
     }
-  }, []);
+  }, [type]);
 
   return (
     <View style={[styles.container, { backgroundColor: docType.darkColor }]}>

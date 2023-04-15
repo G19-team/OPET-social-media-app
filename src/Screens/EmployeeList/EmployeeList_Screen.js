@@ -9,32 +9,13 @@ import {
 } from "react-native";
 import { Colors } from "../../Assets/Colors/Colors";
 
-import {
-  moderateScale,
-  moderateVerticalScale,
-} from "react-native-size-matters";
+import { moderateScale } from "react-native-size-matters";
 
 import * as Animatable from "react-native-animatable";
 
-import { db, auth } from "../../db/firebaseConfig";
-import {
-  doc,
-  deleteDoc,
-  query,
-  onSnapshot,
-  getDocs,
-  collectionGroup,
-  where,
-  orderBy,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  collection,
-  onSnapshotsInSync,
-} from "firebase/firestore";
+import { db } from "../../db/firebaseConfig";
+import { query, onSnapshot, collection } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getStorage, ref, deleteObject } from "firebase/storage";
-import FitImage from "react-native-fit-image";
 
 const EmployeeList_Screen = () => {
   const [data, setData] = useState(null);
@@ -124,8 +105,6 @@ const styles = StyleSheet.create({
 
   flatlist: {
     overflow: "hidden",
-    // paddingVertical: moderateVerticalScale(14),
-    // paddingHorizontal: moderateScale(25),
     borderWidth: 1,
     borderColor: Colors.primaryColor500,
     borderTopLeftRadius: moderateScale(30),
