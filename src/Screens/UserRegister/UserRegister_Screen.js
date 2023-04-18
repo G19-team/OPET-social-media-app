@@ -1,4 +1,4 @@
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Pressable } from "react-native";
 import React, { useState } from "react";
 
 import { styles } from "./Style";
@@ -21,9 +21,21 @@ import { setDoc, doc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
 import { auth, db, storage } from "../../db/firebaseConfig";
 
+//for radio button
+import RadioGroup from "react-native-radio-buttons-group";
+
+//for date time picker
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+import { moderateScale } from "react-native-size-matters";
+
 // user create in db
 
 const UserRegister_Screen = ({ navigation }) => {
+  const date = new Date();
+  const currentYear = date.getFullYear().toString();
+  const currentMonth = (date.getMonth() + 1).toString(); // note: months are 0-indexed, so we add 1 to get the current month
+  const currentDay = date.getDate().toString();
   const [fname, setfname] = useState(null);
   const [mname, setmname] = useState(null);
   const [lname, setlname] = useState(null);
@@ -34,7 +46,28 @@ const UserRegister_Screen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [email, setEmail] = useState(null);
   const [gender, setGender] = useState(null);
-  const [bdate, setbdate] = useState(null);
+  const [radioButtons, setRadioButtons] = useState([
+    {
+      id: "1", // acts as primary key, should be unique and non-empty string
+      label: "Male",
+      value: "Male",
+    },
+    {
+      id: "2",
+      label: "Female",
+      value: "Female",
+    },
+    {
+      id: "3",
+      label: "Other",
+      value: "Other",
+    },
+  ]);
+  const [bdate, setbdate] = useState(
+    new Date(currentYear / currentMonth / currentDay)
+  );
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const [confirmPassword, setConfirmPassword] = useState("");
   // const [username, setusername] = useState(null);
   const [password, setPassword] = useState(null);
@@ -61,6 +94,19 @@ const UserRegister_Screen = ({ navigation }) => {
   const [usernameError, setusernameError] = useState("");
   const [roleError, setroleError] = useState("");
   const [orgidError, setorgidError] = useState("");
+
+  function onPressRadioButton(radioButtonsArray) {
+    setRadioButtons(radioButtonsArray);
+    const value = radioButtons.find(
+      (radioButtons) => radioButtons.selected
+    )?.value;
+    setGender(value);
+  }
+
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    setbdate(selectedDate);
+  };
 
   const clearAll = () => {
     setfname("");
@@ -101,7 +147,8 @@ const UserRegister_Screen = ({ navigation }) => {
       Password: password,
       OrganizationID: orgid,
       UserImage: firebaseImageUrl,
-      isAllowed: 0,
+      Storie: null,
+      isAllowed: false,
     })
       .then(() => {
         navigation.replace("Start_Screen");
@@ -164,147 +211,172 @@ const UserRegister_Screen = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    let error = false;
+    let emailEr = false;
+    let userImageEr = false;
+    let passwordEr = false;
+    let fnameEr = false;
+    let mnameEr = false;
+    let lnameEr = false;
+    let selectsubroleEr = false;
+    let cityEr = false;
+    let countryEr = false;
+    let stateEr = false;
+    let postalcodeEr = false;
+    let phoneNumberER = false;
+    let genderEr = false;
+    let bdateEr = false;
+    let orgidEr = false;
 
     if (!usrImage) {
-      error = true;
+      userImageEr = true;
       setUsrImageError("Please set your image");
     } else {
-      error = false;
+      userImageEr = false;
       setUsrImageError("");
     }
     if (!email) {
-      error = true;
+      emailEr = true;
       setusernameError("Please enter your username");
     } else {
       if (!/\S+@\S+\.\S+/.test(email)) {
-        error = true;
+        emailEr = true;
         setusernameError("please enter vaild email");
       } else {
-        error = false;
+        emailEr = false;
         setusernameError("");
       }
     }
     if (!email) {
-      error = true;
+      emailEr = true;
       setEmailError("Please enter your email");
     } else {
       if (!/\S+@\S+\.\S+/.test(email)) {
-        error = true;
+        emailEr = true;
         setEmailError("please enter vaild email");
       } else {
-        error = false;
+        emailEr = false;
         setEmailError("");
       }
     }
     if (!password) {
-      error = true;
+      passwordEr = true;
       setPasswordError("Please enter your password");
     } else {
-      error = false;
-      setPasswordError("");
+      if (password.length < 6) {
+        passwordEr = true;
+        setPasswordError("Password must be of 6 length");
+      } else {
+        passwordEr = false;
+        setPasswordError("");
+      }
     }
     if (!fname) {
-      error = true;
+      fnameEr = true;
       setfnameError("Please enter your first name  ");
     } else {
-      error = false;
+      fnameEr = false;
       setfnameError("");
     }
     if (!mname) {
-      error = true;
+      mnameEr = true;
       setmnameError("Please enter your middle name ");
     } else {
-      error = false;
+      mnameEr = false;
       setmnameError("");
     }
     if (!lname) {
-      error = true;
+      lnameEr = true;
       setlnameError("Please enter your last name ");
     } else {
-      error = false;
+      lnameEr = false;
       setlnameError("");
     }
     if (!selectsubrole) {
-      error = true;
+      selectsubroleEr = true;
       setroleError("Please enter your role ");
     } else {
-      error = false;
+      selectsubroleEr = false;
       setroleError("");
     }
     if (!city) {
-      error = true;
+      cityEr = true;
       setcityError("Please enter your city name ");
     } else {
-      error = false;
+      cityEr = false;
       setcityError("");
     }
     if (!country) {
-      error = true;
+      countryEr = true;
       setcountryError("Please enter your country name ");
     } else {
-      error = false;
+      countryEr = false;
       setcountryError("");
     }
     if (!state) {
-      error = true;
+      stateEr = true;
       setpostalcodeError("Please enter your postal code ");
     } else {
-      error = false;
+      stateEr = false;
       setpostalcodeError("");
     }
     if (!postalcode) {
-      error = true;
+      postalcodeEr = true;
       setstateError("Please enter your state name ");
     } else {
-      error = false;
+      postalcodeEr = false;
       setstateError("");
     }
     if (!phoneNumber) {
-      error = true;
+      phoneNumberER = true;
       setPhoneNumberError("Please enter your moible no");
+    } else if (phoneNumber.length < 10) {
+      phoneNumberER = true;
+      setPhoneNumberError("please provide 10 digits");
     } else {
-      if (phoneNumber.length < 10) {
-        error = true;
-        setPhoneNumberError("please provide 10 digits");
-      } else {
-        error = false;
-        setPhoneNumberError("");
-      }
+      phoneNumberER = false;
+      setPhoneNumberError("");
     }
     if (!gender) {
-      error = true;
+      genderEr = true;
       setGenderError("Please enter your gender ");
     } else {
-      error = false;
+      genderEr = false;
       setGenderError("");
     }
     if (!bdate) {
-      error = true;
+      bdateEr = true;
       setbdateError("Please enter your birth date ");
     } else {
-      error = false;
+      bdateEr = false;
       setbdateError("");
     }
     if (!orgid) {
-      error = true;
+      orgidEr = true;
       setorgidError("Please enter your org id ");
     } else {
-      error = false;
+      orgidEr = false;
       setorgidError("");
     }
-    // if (!confirmPassword) {
-    //   error = true;
-    //   setConfirmPasswordError("Please confirm your password");
-    // } else if (password !== confirmPassword) {
-    //   error = true;
-    //   setConfirmPasswordError("Passwords do not match");
-    // } else {
-    //   error = false;
-    //   setConfirmPasswordError("");
-    // }
 
-    if (!error) {
+    if (
+      !(
+        emailEr ||
+        userImageEr ||
+        passwordEr ||
+        fnameEr ||
+        mnameEr ||
+        lnameEr ||
+        selectsubroleEr ||
+        cityEr ||
+        countryEr ||
+        stateEr ||
+        postalcodeEr ||
+        phoneNumberER ||
+        genderEr ||
+        bdateEr ||
+        orgidEr
+      )
+    ) {
       Registration();
     }
 
@@ -579,6 +651,7 @@ const UserRegister_Screen = ({ navigation }) => {
             lable="Postal code :"
             style={[stateError && styles.inputError]}
             onChangeText={(text) => setpostalcode(text)}
+            keyboardType="numeric"
             value={postalcode}
           />
           {postalcodeError ? (
@@ -589,6 +662,7 @@ const UserRegister_Screen = ({ navigation }) => {
             style={[phoneNumberError && styles.inputError]}
             lable="Phone number :"
             inputMode="decimal"
+            maxLength={10}
             onChangeText={(text) => setPhoneNumber(text)}
             value={phoneNumber}
           />
@@ -605,19 +679,41 @@ const UserRegister_Screen = ({ navigation }) => {
             value={email}
           />
           {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
-          <LbInputBox
+          {/* <LbInputBox
             style={[genderError && styles.inputError]}
             lable="Gender :"
             onChangeText={(text) => setGender(text)}
             value={gender}
-          />
+          /> */}
+          <Text style={styles.lable}>Gender :</Text>
+          <View
+            style={{ alignItems: "center", marginVertical: moderateScale(8) }}
+          >
+            <RadioGroup
+              layout="row"
+              radioButtons={radioButtons}
+              onPress={onPressRadioButton}
+            />
+          </View>
           {genderError ? <Text style={styles.error}>{genderError}</Text> : null}
-          <LbInputBox
-            style={[bdateError && styles.inputError]}
-            lable="Birth date :"
-            onChangeText={(text) => setbdate(text)}
-            value={bdate}
-          />
+          <Pressable onPress={() => setShowDatePicker(true)}>
+            <LbInputBox
+              style={[bdateError && styles.inputError]}
+              lable="Birth date :"
+              value={bdate.toString()}
+              editable={false}
+            />
+          </Pressable>
+          {showDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={new Date(bdate)}
+              mode={"date"}
+              is24Hour={true}
+              dateFormat="DD-MM-YYYY"
+              onChange={onChange}
+            />
+          )}
           {bdateError ? <Text style={styles.error}>{bdateError}</Text> : null}
           <LbInputBox
             style={[usernameError && styles.inputError]}

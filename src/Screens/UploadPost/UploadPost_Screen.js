@@ -231,6 +231,7 @@ const UploadPost_Screen = ({ navigation }) => {
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "application/xml",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "text/x-c",
       ],
     })
       .then((result) => {
@@ -431,7 +432,7 @@ const UploadPost_Screen = ({ navigation }) => {
         onPress={() => checkFileType(image, fileResult, video)}
       />
 
-      {(image || fileResult || video) && (
+      {(image || fileResult || video || caption) && (
         <MyButton
           title="Remove"
           style={styles.btn}

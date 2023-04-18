@@ -104,6 +104,14 @@ const DocumentView = ({ type, name, size }) => {
           darkColor: "#F29C1F",
         });
         break;
+      case "text/x-c":
+        setDocType({
+          type: "js",
+          path: require("../Assets/Icons/C-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#F76C82",
+        });
+        break;
       default:
         console.log("none");
     }
@@ -115,12 +123,6 @@ const DocumentView = ({ type, name, size }) => {
         <Image source={docType.path} style={styles.icon} />
         <Text style={styles.name}>{name}</Text>
       </View>
-      {/* <View style={styles.footer}>
-        {/* <Text style={styles.info}>
-          {docSize} mb{"\t"}
-        </Text> 
-        <Text style={styles.info}>- {"\t" + docType.type}</Text>
-      </View> */}
     </View>
   );
 };

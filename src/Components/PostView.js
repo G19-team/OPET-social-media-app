@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  RefreshControl,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
 
 import { Video, AVPlaybackStatus } from "expo-av";
@@ -21,167 +13,25 @@ import {
 
 import * as OpenAnything from "react-native-openanything";
 
-import { ActivityIndicator } from "react-native";
-
 import { Colors } from "../Assets/Colors/Colors";
 import alert from "../Utills/alert";
 import { useNavigation } from "@react-navigation/native";
-import Stories from "./Stories";
 
 import * as Animatable from "react-native-animatable";
 
 import { db, auth, storage } from "../db/firebaseConfig";
 import {
   doc,
-  getDoc,
   deleteDoc,
-  query,
-  onSnapshot,
-  collectionGroup,
-  where,
-  orderBy,
   updateDoc,
   arrayUnion,
   arrayRemove,
-  collection,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FlashList } from "@shopify/flash-list";
-import MyButton from "./MyButton";
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const PostView = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [orgId, setOrgId] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [role, setRole] = useState("");
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchData(orgId);
-    setRefreshing(false);
-  };
-
-  useLayoutEffect(() => {
-    const id = AsyncStorage.getItem("orgId")
-      .then((id) => {
-        setOrgId(id);
-        fetchData(id);
-      })
-      .catch((e) => console.log(e));
-  }, []);
-
-  const fetchData = async (id) => {
-    await getDoc(
-      doc(db, "organization", id, "users", auth.currentUser.uid)
-    ).then((role) => {
-      setRole(role.data().Role);
-    });
-    const postQuery = query(
-      collectionGroup(db, "posts"),
-      where("orgId", "==", id.toString()),
-      orderBy("createdAt", "asc")
-    );
-    onSnapshot(postQuery, (post) => {
-      setData(
-        post.docs
-          .map((post) => ({
-            id: post.id,
-            data: post.data(),
-          }))
-          .reverse()
-      );
-    });
-
-    setIsLoading(false);
-  };
-
-  return isLoading ? (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <ActivityIndicator size="large" color={Colors.primaryColor200} />
-    </View>
-  ) : (
-    <>
-      <View style={{ flex: 1, zIndex: -2 }}>
-        <FlashList
-          ref={ref}
-          estimatedItemSize={463}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => onRefresh()}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-          data={data}
-          renderItem={({ item, index }) => (
-            <Post
-              data={item.data}
-              index={index}
-              role={role}
-              postId={item.id}
-              orgId={orgId}
-              style={{ zIndex: -1 }}
-            />
-          )}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={
-            <View
-              style={{
-                flex: 1,
-                marginVertical: 35,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <FitImage
-                source={require("../Assets/Img/empty-box.png")}
-                resizeMode="stretch"
-                style={{ width: 150, height: 150 }}
-              />
-              <Text>No post available to display</Text>
-            </View>
-          }
-          ListHeaderComponent={
-            <View>
-              <Text
-                style={{
-                  fontSize: scale(20),
-                  paddingHorizontal: 10,
-                  fontWeight: "bold",
-                }}
-              >
-                Stories :
-              </Text>
-              <Stories />
-              <Text
-                style={{
-                  fontSize: scale(20),
-                  paddingHorizontal: 10,
-                  fontWeight: "bold",
-                }}
-              >
-                Post :
-              </Text>
-            </View>
-          }
-        />
-      </View>
-    </>
-  );
-};
-
-export default PostView;
-
-const Post = ({ data, postId, orgId, index, role }) => {
+const PostView = ({ data, postId, orgId, index, role }) => {
   const postRef = doc(
     db,
     "organization",
@@ -441,6 +291,8 @@ const Post = ({ data, postId, orgId, index, role }) => {
     </>
   );
 };
+
+export default PostView;
 
 const styles = StyleSheet.create({
   post: {

@@ -20,7 +20,6 @@ import {
   scale,
   moderateVerticalScale,
 } from "react-native-size-matters";
-import { clockRunning } from "react-native-reanimated";
 
 const AboutOrganization_Screen = () => {
   const [orgData, setOrgData] = useState({});

@@ -4,7 +4,7 @@
     "slug": "OPET",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/opet-icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/opet-splash.png",

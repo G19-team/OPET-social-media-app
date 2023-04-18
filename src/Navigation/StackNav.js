@@ -8,6 +8,7 @@ import EditProfile_Screen from "../Screens/EditProfle/EditProfile_Screen";
 import DocumentViewer_Screen from "../Screens/DocumentVIewer/DocumentViewer_Screen";
 import Suggestion from "../Screens/SuggestionScreen/Suggestion";
 import AuthLoading_Screen from "../Screens/AuthLoading/AuthLoading_Screen";
+import StorieView_Screen from "../Screens/StorieView/StorieView_Screen";
 import HomeNav from "./HomeNav";
 
 //libraries for navigation.
@@ -75,6 +76,17 @@ const StackNav = ({ isUserLoggedIn }) => {
           contentStyle: {
             paddingHorizontal: moderateScale(11),
             backgroundColor: "#ffffff",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="StorieView_Screen"
+        component={StorieView_Screen}
+        options={{
+          headerShown: false,
+          contentStyle: {
+            paddingHorizontal: moderateScale(11),
+            backgroundColor: "#252525",
           },
         }}
       />

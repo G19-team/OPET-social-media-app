@@ -106,16 +106,22 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    let error = false;
+    let emailEr = false;
+    let orgnameEr = false;
+    let orgconnumEr = false;
+    let orgaddEr = false;
+    let orgaboutEr = false;
+    let orgpasswordEr = false;
+    let orgImageEr = false;
     if (!orgemail) {
-      error = true;
+      emailEr = true;
       setorgemailError("Please enter your email");
     } else {
       if (!/\S+@\S+\.\S+/.test(orgemail)) {
-        error = true;
+        emailEr = true;
         setorgemailError("please enter vaild email");
       } else {
-        error = false;
+        emailEr = false;
         setorgemailError("");
       }
     }
@@ -124,68 +130,83 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       error = true;
       setorgnameError("Please enter your org name  ");
     } else {
-      error = false;
+      orgnameEr = false;
       setorgnameError("");
     }
 
     if (!orgconnum) {
-      error = true;
+      orgconnumEr = true;
       setorgconnumError("Please enter your org contact number  ");
     } else {
-      error = false;
-      setorgconnumError("");
+      if (orgconnum.length < 10) {
+        orgconnumEr = true;
+        setorgconnumError("please provide 10 digits");
+      } else {
+        orgconnumEr = false;
+        setorgconnumError("");
+      }
     }
     if (!orgadd) {
-      error = true;
+      orgaddEr = true;
       setorgaddError("Please enter addressoa  ");
     } else {
-      error = false;
+      orgaddEr = false;
       setorgaddError("");
     }
 
     if (!orgabout) {
-      error = true;
+      orgaboutEr = true;
       setorgaboutError("Please enter your org about   ");
     } else {
-      error = false;
+      orgaboutEr = false;
       setorgaboutError("");
     }
 
     if (!orgemail) {
-      error = true;
+      emailEr = true;
       setorgusernameError("Please enter your username");
     } else {
       if (!/\S+@\S+\.\S+/.test(orgemail)) {
-        error = true;
+        emailEr = true;
         setorgusernameError("please enter vaild email");
       } else {
-        error = false;
+        emailEr = false;
         setorgusernameError("");
       }
     }
 
     if (!orgpassword) {
-      error = true;
+      orgpasswordEr = true;
       setorgpasswordError("Please enter your  org password");
     } else {
       if (orgpassword.length < 6) {
-        error = true;
+        orgpasswordEr = true;
         setorgpasswordError("Password must be of 6 length");
       } else {
-        error = false;
+        orgpasswordEr = false;
         setorgpasswordError("");
       }
     }
 
     if (!orgImage) {
-      error = true;
+      orgImageEr = true;
       setImageError("Please set your image");
     } else {
-      error = false;
+      orgImageEr = false;
       setImageError("");
     }
 
-    if (!error) {
+    if (
+      !(
+        emailEr ||
+        orgnameEr ||
+        orgconnumEr ||
+        orgaddEr ||
+        orgaboutEr ||
+        orgpasswordEr ||
+        orgImageEr
+      )
+    ) {
       picupload();
     }
   };
@@ -271,9 +292,11 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       <LbInputBox
         lable="Organization Contact Number :"
         style={[orgconnumError && styles.inputError]}
+        maxLength={10}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgconnum(text)}
         value={orgconnum}
+        keyboardType="number-pad"
       />
       {orgconnumError ? (
         <Text style={styles.error}>{orgconnumError}</Text>

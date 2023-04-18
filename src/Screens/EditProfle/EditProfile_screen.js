@@ -6,7 +6,7 @@ import {
   ImageBackground,
   TextInput,
   StyleSheet,
-  Platform,
+  ScrollView,
 } from "react-native";
 
 import { useTheme } from "react-native-paper";
@@ -39,19 +39,93 @@ import Animated from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 
 import { KeyboardAvoidingView } from "react-native";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { db, storage, auth } from "../../db/firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { ActivityIndicator } from "react-native";
+import { Colors } from "../../Assets/Colors/Colors";
 
 //plse install ImagePicke pakage and import
 
-const EditProfile_Screen = () => {
+const EditProfile_Screen = ({ navigation }) => {
   const [image, setImage] = useState(
     "https://aniportalimages.s3.amazonaws.com/media/details/1639049711050_12021122709484420211227101334.jpg"
   );
   const { colors } = useTheme();
 
+  const [fname, setfname] = useState(null);
+  const [mname, setmname] = useState(null);
+  const [lname, setlname] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [city, setcity] = useState(null);
+  const [country, setcountry] = useState(null);
+  const [roll, setroll] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const update = (firebaseImageUrl) => {
+    const orgid = AsyncStorage.getItem("orgId").then(async (orgId) => {
+      const docRef = doc(
+        db,
+        "organization",
+        orgId,
+        "users",
+        auth.currentUser.uid
+      );
+      setIsLoading(true);
+      await updateDoc(docRef, {
+        Firstname: fname.toLowerCase(),
+        Middlename: mname.toLowerCase(),
+        Lastname: lname.toLowerCase(),
+        Country: country,
+        City: city,
+        Phonenumber: phoneNumber,
+        Email: email,
+        Role: roll,
+        UserImage: firebaseImageUrl,
+      }).then(() => {
+        alert(
+          "Successfully update !",
+          "Your profile has been updated successfully."
+        );
+      });
+      setIsLoading(false);
+    });
+  };
+
+  const picupload = async () => {
+    console.log("object");
+    let result = await fetch(image);
+
+    const blobImage = await result.blob();
+    const filename = image.substring(image.lastIndexOf("/") + 1);
+    const storageRef = ref(storage, "USRPIC/" + filename);
+    const uploadTask = uploadBytesResumable(storageRef, blobImage);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        Alert.alert("Failed to upload", "Please try again..");
+      },
+
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log(downloadURL);
+          update(downloadURL);
+        });
+      }
+    );
+  };
+
   const choosePhotoFromLibrary = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
+      aspect: [3, 3],
     }).then((result) => {
       setImage(result.assets[0].uri);
       this.bs.current.snapTo(1);
@@ -66,6 +140,7 @@ const EditProfile_Screen = () => {
       </View>
       <TouchableOpacity
         style={styles.panelButton}
+        //onPress={choosePhotoFromLibrary}
         onPress={choosePhotoFromLibrary}
       >
         <Text style={styles.panelButtonTitle}>Choose From Library</Text>
@@ -74,7 +149,7 @@ const EditProfile_Screen = () => {
         style={styles.panelButton}
         onPress={() => this.bs.current.snapTo(1)}
       >
-        <Text style={styles.panelButtonTitle}>Not Upload Photo</Text>
+        <Text style={styles.panelButtonTitle}> cancele</Text>
       </TouchableOpacity>
     </View>
   );
@@ -91,7 +166,7 @@ const EditProfile_Screen = () => {
   fall = new Animated.Value(1);
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAwareScrollView style={styles.container}>
       <BottomSheet
         ref={this.bs}
         snapPoints={[330, 0]}
@@ -119,38 +194,44 @@ const EditProfile_Screen = () => {
               }}
             >
               <ImageBackground
-                source={{
-                  uri: "https://aniportalimages.s3.amazonaws.com/media/details/1639049711050_12021122709484420211227101334.jpg",
-                }}
+                source={
+                  image
+                    ? { uri: image }
+                    : {
+                        uri: "https://aniportalimages.s3.amazonaws.com/media/details/1639049711050_12021122709484420211227101334.jpg",
+                      }
+                }
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}
               >
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Icon
-                    name="camera"
-                    size={35}
-                    color="#fff"
+                {image && (
+                  <View
                     style={{
-                      opacity: 0.7,
-                      alignItems: "center",
+                      flex: 1,
                       justifyContent: "center",
-                      borderWidth: 1,
-                      borderColor: "#fff",
-                      borderRadius: 10,
+                      alignItems: "center",
                     }}
-                  />
-                </View>
+                  >
+                    <Icon
+                      name="camera"
+                      size={35}
+                      color="#fff"
+                      style={{
+                        opacity: 0.7,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: 1,
+                        borderColor: "#fff",
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                )}
               </ImageBackground>
             </View>
           </TouchableOpacity>
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            raistar
+            {fname} {mname} {lname}
           </Text>
         </View>
 
@@ -159,6 +240,23 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder="Enter your First Name"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setfname(text)}
+            autoCorrect={false}
+            style={[
+              styles.textInput,
+              {
+                color: colors.text,
+              },
+            ]}
+          />
+        </View>
+
+        <View style={styles.action}>
+          <FontAwesome name="user-o" color={colors.text} size={20} />
+          <TextInput
+            placeholder="Enter your Middle Name"
+            placeholderTextColor="#666666"
+            onChangeText={(text) => setmname(text)}
             autoCorrect={false}
             style={[
               styles.textInput,
@@ -173,6 +271,7 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder="Enter your Last Name"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setlname(text)}
             autoCorrect={false}
             style={[
               styles.textInput,
@@ -187,6 +286,7 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder=" Enter your Phone no"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setPhoneNumber(text)}
             keyboardType="number-pad"
             autoCorrect={false}
             style={[
@@ -202,6 +302,7 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder=" Enter your Email"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setEmail(text)}
             keyboardType="email-address"
             autoCorrect={false}
             style={[
@@ -217,6 +318,7 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder=" Enter your Country"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setcountry(text)}
             autoCorrect={false}
             style={[
               styles.textInput,
@@ -231,6 +333,7 @@ const EditProfile_Screen = () => {
           <TextInput
             placeholder="Enter your City"
             placeholderTextColor="#666666"
+            onChangeText={(text) => setcity(text)}
             autoCorrect={false}
             style={[
               styles.textInput,
@@ -240,17 +343,41 @@ const EditProfile_Screen = () => {
             ]}
           />
         </View>
-        <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
-          <Text style={styles.panelButtonTitle}>Submit your data</Text>
+        <View style={styles.action}>
+          <FontAwesome name="user-o" color={colors.text} size={20} />
+          <TextInput
+            placeholder="Enter your roll "
+            placeholderTextColor="#666666"
+            onChangeText={(text) => setroll(text)}
+            autoCorrect={false}
+            style={[
+              styles.textInput,
+              {
+                color: colors.text,
+              },
+            ]}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.commandButton}
+          onPress={() => picupload()}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="large" color={"#ffffff"} />
+          ) : (
+            <Text style={styles.panelButtonTitle}>update</Text>
+          )}
         </TouchableOpacity>
       </Animated.View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#ffffff",
   },
   commandButton: {
     padding: 15,
