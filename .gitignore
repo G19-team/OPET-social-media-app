@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-Utills/Mailer.js
+src/Utills/Mailer.js
 
 # macOS
 .DS_Store
