@@ -19,7 +19,15 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 // it is the fb
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../db/firebaseConfig";
+import { auth, db } from "../../db/firebaseConfig";
+import {
+  query,
+  where,
+  doc,
+  getDocs,
+  getDoc,
+  collection,
+} from "firebase/firestore";
 import alert from "../../Utills/alert";
 
 //libary used to store value , object in local storage of mobile.
@@ -31,6 +39,49 @@ const LogIn_Screen = ({ navigation }) => {
     UserName: "",
     Password: "",
   });
+
+  const handleLogin = async () => {
+    if (
+      !logInDetails.organizationID ||
+      !logInDetails.UserName ||
+      !logInDetails.Password
+    ) {
+      alert("Waring", "Please enter all above field..");
+      return 0;
+    }
+    const orgRef = doc(db, "organization", logInDetails.organizationID);
+    const orgDoc = await getDoc(orgRef);
+
+    if (orgDoc.exists()) {
+      const userRef = query(
+        collection(db, "organization", logInDetails.organizationID, "users"),
+        where("UserName", "==", logInDetails.UserName)
+      );
+      const userDoc = await getDocs(userRef);
+      if (userDoc.size > 0) {
+        const user = userDoc.docs[0].data();
+        if (user.Password === logInDetails.Password) {
+          if (user.isAllowed) {
+            // Login successful
+            login();
+          } else {
+            //console.log("User is not allowed to log in");
+            alert(
+              "User is not allowed to log in please contact your organization"
+            );
+          }
+        } else {
+          //console.log("Incorrect password");
+          alert("Wrong password ");
+        }
+      } else {
+        // console.log("User does not exist in this organization");
+        alert("User does not exist in this organization ");
+      }
+    } else {
+      alert("Organization does not exist");
+    }
+  };
 
   const login = async () => {
     try {
@@ -116,7 +167,7 @@ const LogIn_Screen = ({ navigation }) => {
             style={styles.btn}
             fontStyle={styles.fontstyle}
             onPress={() => {
-              login();
+              handleLogin();
             }}
           />
 

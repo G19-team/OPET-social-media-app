@@ -16,6 +16,7 @@ const LbInputBox = ({
   iconColor,
   style,
   outstyle,
+  textStyle,
   ...props
 }) => {
   return (
@@ -30,7 +31,11 @@ const LbInputBox = ({
           />
         )}
         <TextInput
-          style={[styles.input, iconName && { marginLeft: moderateScale(10) }]}
+          style={[
+            styles.input,
+            iconName && { marginLeft: moderateScale(10) },
+            textStyle,
+          ]}
           {...props}
         />
       </View>

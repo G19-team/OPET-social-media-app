@@ -117,57 +117,11 @@ const Profile_Screen = ({ navigation }) => {
           .reverse()
       );
     });
-
     setIsLoading(false);
   };
 
   return (
-    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <Image
-          style={styles.userImg}
-          source={
-            userdata.UserImage
-              ? { uri: userdata.UserImage }
-              : require("../../Assets/Img/OPET_LOGO.png")
-          }
-        />
-        <Text style={styles.userName}>
-          {userdata.Middlename} {userdata.Firstname} {userdata.Lastname}
-        </Text>
-        <Text style={styles.aboutUser}> Role : {userdata.Role} </Text>
-        <Text style={styles.aboutUser}>
-          Address: {userdata.City} {userdata.State} {userdata.Country}{" "}
-        </Text>
-        <Text style={styles.aboutUser}>
-          Contect number : {userdata.Phonenumber}{" "}
-        </Text>
-        <Text style={styles.aboutUser}> Email : {userdata.Email} </Text>
-        <View style={styles.userBtnWrapper}>
-          <TouchableOpacity
-            style={styles.userBtn}
-            onPress={() => {
-              navigation.navigate("EditProfile_Screen");
-            }}
-          >
-            <Text style={styles.userBtnTxt}>Edit your profile</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.userInfoWrapper}>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>{posts}</Text>
-            <Text style={styles.userInfoSubTitle}>posts</Text>
-          </View>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>{likes}</Text>
-            <Text style={styles.userInfoSubTitle}>likes</Text>
-          </View>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>{dislikes}</Text>
-            <Text style={styles.userInfoSubTitle}>dislikes</Text>
-          </View>
-        </View>
-      </View>
+    <View style={{ flex: 1 }}>
       {isLoading ? (
         <View
           style={{
@@ -179,46 +133,91 @@ const Profile_Screen = ({ navigation }) => {
           <ActivityIndicator size="large" color={Colors.primaryColor200} />
         </View>
       ) : (
-        <View>
-          <FlashList
-            ref={ref}
-            estimatedItemSize={463}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
+        <FlashList
+          ref={ref}
+          estimatedItemSize={463}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          data={data}
+          renderItem={({ item, index }) => (
+            <PostView
+              data={item.data}
+              index={index}
+              role={userdata.Role}
+              postId={item.id}
+              orgId={orgId}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={
+            <View
+              style={{
+                flex: 1,
+                marginVertical: 35,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <FitImage
+                source={require("../../Assets/Img/empty-box.png")}
+                resizeMode="stretch"
+                style={{ width: 150, height: 150 }}
               />
-            }
-            showsVerticalScrollIndicator={false}
-            data={data}
-            renderItem={({ item, index }) => (
-              <PostView
-                data={item.data}
-                index={index}
-                role={userdata.Role}
-                postId={item.id}
-                orgId={orgId}
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            ListEmptyComponent={
-              <View
-                style={{
-                  flex: 1,
-                  marginVertical: 35,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <FitImage
-                  source={require("../../Assets/Img/empty-box.png")}
-                  resizeMode="stretch"
-                  style={{ width: 150, height: 150 }}
+              <Text>No post available to display</Text>
+            </View>
+          }
+          ListHeaderComponent={
+            <>
+              <View style={styles.container}>
+                <Image
+                  style={styles.userImg}
+                  source={
+                    userdata.UserImage
+                      ? { uri: userdata.UserImage }
+                      : require("../../Assets/Img/OPET_LOGO.png")
+                  }
                 />
-                <Text>No post available to display</Text>
+                <Text style={styles.userName}>
+                  {userdata.Lastname} {userdata.Firstname} {userdata.Middlename}
+                </Text>
+                <Text style={styles.aboutUser}> Role : {userdata.Role} </Text>
+                <Text style={styles.aboutUser}>
+                  Address: {userdata.City} {userdata.State} {userdata.Country}{" "}
+                </Text>
+                <Text style={styles.aboutUser}>
+                  Contect number : {userdata.Phonenumber}{" "}
+                </Text>
+                <Text style={styles.aboutUser}> Email : {userdata.Email} </Text>
+                <View style={styles.userBtnWrapper}>
+                  <TouchableOpacity
+                    style={styles.userBtn}
+                    onPress={() => {
+                      navigation.navigate("EditProfile_Screen");
+                    }}
+                  >
+                    <Text style={styles.userBtnTxt}>Edit your profile</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.userInfoWrapper}>
+                  <View style={styles.userInfoItem}>
+                    <Text style={styles.userInfoTitle}>{posts}</Text>
+                    <Text style={styles.userInfoSubTitle}>posts</Text>
+                  </View>
+                  <View style={styles.userInfoItem}>
+                    <Text style={styles.userInfoTitle}>{likes}</Text>
+                    <Text style={styles.userInfoSubTitle}>likes</Text>
+                  </View>
+                  <View style={styles.userInfoItem}>
+                    <Text style={styles.userInfoTitle}>{dislikes}</Text>
+                    <Text style={styles.userInfoSubTitle}>dislikes</Text>
+                  </View>
+                </View>
               </View>
-            }
-            ListHeaderComponent={
               <View>
                 <Text
                   style={{
@@ -230,11 +229,11 @@ const Profile_Screen = ({ navigation }) => {
                   Post :
                 </Text>
               </View>
-            }
-          />
-        </View>
+            </>
+          }
+        />
       )}
-    </ScrollView>
+    </View>
   );
 };
 

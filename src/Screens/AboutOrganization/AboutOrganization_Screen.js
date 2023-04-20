@@ -5,8 +5,8 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Linking,
 } from "react-native";
-import * as OpenAnything from "react-native-openanything";
 import React, { useLayoutEffect, useState } from "react";
 import FitImage from "react-native-fit-image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -67,13 +67,9 @@ const AboutOrganization_Screen = () => {
             <TouchableOpacity
               style={styles.contactorgcontainer}
               onPress={() => {
-                OpenAnything.Call("+91 9898374059")
-                  .then(() => {
-                    console.log("Phone call initiated successfully");
-                  })
-                  .catch((error) => {
-                    console.log("Error initiating phone call:", error);
-                  });
+                Linking.openURL(
+                  `tel:${orgData.data.OrganizationContactNumber}`
+                );
               }}
             >
               <View style={styles.options}>
@@ -94,7 +90,7 @@ const AboutOrganization_Screen = () => {
             <TouchableOpacity
               style={styles.contactorgcontainer}
               onPress={() =>
-                OpenAnything.Email((to = orgData.data.OrganizationEmail))
+                Linking.openURL(`mailto:${orgData.data.OrganizationEmail}`)
               }
             >
               <View style={styles.options}>

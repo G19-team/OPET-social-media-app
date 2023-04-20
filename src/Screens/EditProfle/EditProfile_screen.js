@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -41,12 +41,13 @@ import * as ImagePicker from "expo-image-picker";
 import { KeyboardAvoidingView } from "react-native";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../../db/firebaseConfig";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, onSnapshot } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../../Assets/Colors/Colors";
+import alert from "../../Utills/alert";
 
 //plse install ImagePicke pakage and import
 
@@ -63,8 +64,32 @@ const EditProfile_Screen = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [city, setcity] = useState(null);
   const [country, setcountry] = useState(null);
-  const [roll, setroll] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useLayoutEffect(() => {
+    const id = AsyncStorage.getItem("orgId").then((id) => {
+      fetchData(id);
+    });
+  }, []);
+
+  const fetchData = async (id) => {
+    const docRef = doc(db, "organization", id, "users", auth.currentUser.uid);
+    const snap = onSnapshot(docRef, async (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setImage(data.UserImage);
+        setfname(data.Firstname);
+        setmname(data.Middlename);
+        setlname(data.Lastname);
+        setPhoneNumber(data.Phonenumber);
+        setEmail(data.Email);
+        setcity(data.City);
+        setcountry(data.Country);
+      } else {
+        console.log("No such document!");
+      }
+    });
+  };
 
   const update = (firebaseImageUrl) => {
     const orgid = AsyncStorage.getItem("orgId").then(async (orgId) => {
@@ -75,7 +100,7 @@ const EditProfile_Screen = ({ navigation }) => {
         "users",
         auth.currentUser.uid
       );
-      setIsLoading(true);
+
       await updateDoc(docRef, {
         Firstname: fname.toLowerCase(),
         Middlename: mname.toLowerCase(),
@@ -84,7 +109,6 @@ const EditProfile_Screen = ({ navigation }) => {
         City: city,
         Phonenumber: phoneNumber,
         Email: email,
-        Role: roll,
         UserImage: firebaseImageUrl,
       }).then(() => {
         alert(
@@ -97,7 +121,21 @@ const EditProfile_Screen = ({ navigation }) => {
   };
 
   const picupload = async () => {
-    console.log("object");
+    if (
+      !image ||
+      !fname ||
+      !mname ||
+      !lname ||
+      !phoneNumber ||
+      !email ||
+      !city ||
+      !country
+    ) {
+      alert("Not permitted", "Please enter all above fields.");
+      setIsLoading(false);
+      return 0;
+    }
+    setIsLoading(true);
     let result = await fetch(image);
 
     const blobImage = await result.blob();
@@ -109,12 +147,11 @@ const EditProfile_Screen = ({ navigation }) => {
       "state_changed",
       (snapshot) => {},
       (error) => {
-        Alert.alert("Failed to upload", "Please try again..");
+        alert("Failed to upload", "Please try again..");
       },
 
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log(downloadURL);
           update(downloadURL);
         });
       }
@@ -242,6 +279,7 @@ const EditProfile_Screen = ({ navigation }) => {
             placeholderTextColor="#666666"
             onChangeText={(text) => setfname(text)}
             autoCorrect={false}
+            value={fname}
             style={[
               styles.textInput,
               {
@@ -258,6 +296,7 @@ const EditProfile_Screen = ({ navigation }) => {
             placeholderTextColor="#666666"
             onChangeText={(text) => setmname(text)}
             autoCorrect={false}
+            value={mname}
             style={[
               styles.textInput,
               {
@@ -273,6 +312,7 @@ const EditProfile_Screen = ({ navigation }) => {
             placeholderTextColor="#666666"
             onChangeText={(text) => setlname(text)}
             autoCorrect={false}
+            value={lname}
             style={[
               styles.textInput,
               {
@@ -289,6 +329,7 @@ const EditProfile_Screen = ({ navigation }) => {
             onChangeText={(text) => setPhoneNumber(text)}
             keyboardType="number-pad"
             autoCorrect={false}
+            value={phoneNumber}
             style={[
               styles.textInput,
               {
@@ -305,6 +346,7 @@ const EditProfile_Screen = ({ navigation }) => {
             onChangeText={(text) => setEmail(text)}
             keyboardType="email-address"
             autoCorrect={false}
+            value={email}
             style={[
               styles.textInput,
               {
@@ -320,6 +362,7 @@ const EditProfile_Screen = ({ navigation }) => {
             placeholderTextColor="#666666"
             onChangeText={(text) => setcountry(text)}
             autoCorrect={false}
+            value={country}
             style={[
               styles.textInput,
               {
@@ -335,6 +378,7 @@ const EditProfile_Screen = ({ navigation }) => {
             placeholderTextColor="#666666"
             onChangeText={(text) => setcity(text)}
             autoCorrect={false}
+            value={city}
             style={[
               styles.textInput,
               {
@@ -343,7 +387,7 @@ const EditProfile_Screen = ({ navigation }) => {
             ]}
           />
         </View>
-        <View style={styles.action}>
+        {/* <View style={styles.action}>
           <FontAwesome name="user-o" color={colors.text} size={20} />
           <TextInput
             placeholder="Enter your roll "
@@ -357,7 +401,7 @@ const EditProfile_Screen = ({ navigation }) => {
               },
             ]}
           />
-        </View>
+        </View> */}
         <TouchableOpacity
           style={styles.commandButton}
           onPress={() => picupload()}
@@ -373,6 +417,7 @@ const EditProfile_Screen = ({ navigation }) => {
     </KeyboardAwareScrollView>
   );
 };
+export default EditProfile_Screen;
 
 const styles = StyleSheet.create({
   container: {
@@ -382,7 +427,8 @@ const styles = StyleSheet.create({
   commandButton: {
     padding: 15,
     borderRadius: 10,
-    backgroundColor: "#4169e1",
+    backgroundColor: Colors.primaryColor500,
+    //backgroundColor: " #FBBF77",
     alignItems: "center",
     marginTop: 10,
   },
@@ -425,7 +471,9 @@ const styles = StyleSheet.create({
   panelButton: {
     padding: 13,
     borderRadius: 10,
-    backgroundColor: "#4169e1",
+    //backgroundColor: "#4169e1",
+    backgroundColor: Colors.primaryColor500,
+    //backgroundColor: " #FBBF77",
     alignItems: "center",
     marginVertical: 7,
   },
@@ -456,5 +504,3 @@ const styles = StyleSheet.create({
     color: "#05375a",
   },
 });
-
-export default EditProfile_Screen;

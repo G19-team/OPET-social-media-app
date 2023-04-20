@@ -70,7 +70,7 @@ const Suggestion = ({ route }) => {
 
   const sendSuggestion = async () => {
     if (!suggestion) {
-      alert("Warning!", "Please enter data");
+      alert("Warning!", "Please enter your data");
     } else {
       await updateDoc(postRef, {
         suggestions: arrayUnion({
@@ -100,7 +100,7 @@ const Suggestion = ({ route }) => {
           )}
         />
       </View>
-      {role === "leader" ? (
+      {role === "leader" || userId === auth.currentUser.uid ? (
         <View style={{ position: "absolute", bottom: 5, width: "100%" }}>
           <TextInput
             mode="outlined"

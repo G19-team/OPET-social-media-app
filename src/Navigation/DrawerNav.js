@@ -3,8 +3,9 @@ import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItemList,
+  DrawerItem,
 } from "@react-navigation/drawer";
-import { View, Text } from "react-native";
+import { View, Text, Share } from "react-native";
 import { Button } from "react-native-paper";
 
 import Profile_Screen from "../Screens/Profile/Profile_Screen";
@@ -85,6 +86,32 @@ const DrawerNav = ({ navigation }) => {
     return (
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
+        <DrawerItem
+          label="Share OPET"
+          icon={({ size, color }) => {
+            return (
+              <Icon name="share-variant-outline" color={color} size={size} />
+            );
+          }}
+          onPress={async () => {
+            try {
+              const result = await Share.share({
+                message: "OPET | A social media application for office purpose",
+              });
+              if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                  // shared with activity type of result.activityType
+                } else {
+                  // shared
+                }
+              } else if (result.action === Share.dismissedAction) {
+                // dismissed
+              }
+            } catch (error) {
+              alert(error.message);
+            }
+          }}
+        />
 
         <Button
           mode="contained"

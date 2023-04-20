@@ -77,7 +77,7 @@ const StorieView_Screen = ({ route, navigation }) => {
         {uid === auth.currentUser.uid && (
           <TouchableOpacity
             onPress={() =>
-              alert("Warning!", "do you want to delete this story", [
+              alert("Warning!", "Do you want to delete this story", [
                 {
                   text: "Yes",
                   onPress: () => deleteStory(),

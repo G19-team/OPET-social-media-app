@@ -142,7 +142,7 @@ const UserRegister_Screen = ({ navigation }) => {
       Phonenumber: phoneNumber,
       Email: email,
       Gender: gender,
-      Birthdate: bdate,
+      Birthdate: bdate.toLocaleDateString(),
       UserName: email,
       Password: password,
       OrganizationID: orgid,
@@ -623,13 +623,6 @@ const UserRegister_Screen = ({ navigation }) => {
           {roleError ? <Text style={styles.error}>{roleError}</Text> : null}
 
           <LbInputBox
-            style={[cityError && styles.inputError]}
-            lable="City :"
-            onChangeText={(text) => setcity(text)}
-            value={city}
-          />
-          {cityError ? <Text style={styles.error}>{cityError}</Text> : null}
-          <LbInputBox
             style={[countryError && styles.inputError]}
             lable="Country :"
             onChangeText={(text) => setcountry(text)}
@@ -638,8 +631,6 @@ const UserRegister_Screen = ({ navigation }) => {
           {countryError ? (
             <Text style={styles.error}>{countryError}</Text>
           ) : null}
-          {/* </View> */}
-          {/* <View style={styles.twobox}> */}
           <LbInputBox
             style={[stateError && styles.inputError]}
             lable="State / Region :"
@@ -647,6 +638,15 @@ const UserRegister_Screen = ({ navigation }) => {
             value={state}
           />
           {stateError ? <Text style={styles.error}>{stateError}</Text> : null}
+          <LbInputBox
+            style={[cityError && styles.inputError]}
+            lable="City :"
+            onChangeText={(text) => setcity(text)}
+            value={city}
+          />
+          {cityError ? <Text style={styles.error}>{cityError}</Text> : null}
+          {/* </View> */}
+          {/* <View style={styles.twobox}> */}
           <LbInputBox
             lable="Postal code :"
             style={[stateError && styles.inputError]}
@@ -699,8 +699,10 @@ const UserRegister_Screen = ({ navigation }) => {
           <Pressable onPress={() => setShowDatePicker(true)}>
             <LbInputBox
               style={[bdateError && styles.inputError]}
+              textStyle={{ textAlign: "center" }}
               lable="Birth date :"
-              value={bdate.toString()}
+              value={bdate.toLocaleDateString()}
+              iconName={"calendar-outline"}
               editable={false}
             />
           </Pressable>
@@ -710,7 +712,6 @@ const UserRegister_Screen = ({ navigation }) => {
               value={new Date(bdate)}
               mode={"date"}
               is24Hour={true}
-              dateFormat="DD-MM-YYYY"
               onChange={onChange}
             />
           )}

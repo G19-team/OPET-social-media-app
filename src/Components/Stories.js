@@ -44,11 +44,6 @@ const Stories = () => {
     const id = AsyncStorage.getItem("orgId").then((id) => {
       const storieRef = collection(db, "organization", id, "users");
       const q = query(storieRef, where("Storie", "!=", null));
-      // const storieSnap = onSnapshot(q, (docSnap) => {
-      //   docSnap.forEach((data) => {
-      //     console.log(data.data().Firstname + "=>" + data.data().Storie);
-      //   });
-      // });
       const storieSnap = onSnapshot(q, (docSnap) => {
         setStroieData(
           docSnap.docs.map((storie) => ({
