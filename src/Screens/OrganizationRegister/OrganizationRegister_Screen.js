@@ -10,6 +10,8 @@ import alert from "../../Utills/alert";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MyButton from "../../Components/MyButton";
 
+import { Checkbox } from "react-native-paper";
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { db, storage } from "../../db/firebaseConfig";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
@@ -19,6 +21,7 @@ import FitImage from "react-native-fit-image";
 
 import * as ImagePicker from "expo-image-picker";
 import { sendEmail } from "../../Utills/Mailer";
+import { moderateScale } from "react-native-size-matters";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgname, setorgname] = useState("");
@@ -28,6 +31,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgabout, setorgabout] = useState("");
   const [orgusername, setorgusername] = useState("");
   const [orgpassword, setorgpassword] = useState("");
+  const [checked, setChecked] = useState(false);
   const [orgImage, setImage] = useState("");
 
   //Error states
@@ -39,6 +43,8 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   const [orgusernameError, setorgusernameError] = useState("");
   const [orgpasswordError, setorgpasswordError] = useState("");
   const [orgImageError, setImageError] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const sendMail = (orgName, toEmail, subject, orgId, userName, password) => {
     sendEmail(
@@ -88,6 +94,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       OrgId: nodeId,
     }).then(() => {
       navigation.replace("Start_Screen");
+      setIsLoading(false);
       clearAll();
       alert(
         "Registered",
@@ -127,16 +134,21 @@ const OrganizationRegister_Screen = ({ navigation }) => {
     }
 
     if (!orgname) {
-      error = true;
+      orgnameEr = true;
       setorgnameError("Please enter your org name  ");
     } else {
-      orgnameEr = false;
-      setorgnameError("");
+      if (!/^[a-zA-Z]+$/.test(orgname)) {
+        orgnameEr = true;
+        setorgnameError("Please enter only alphabets");
+      } else {
+        orgnameEr = false;
+        setorgnameError("");
+      }
     }
 
     if (!orgconnum) {
       orgconnumEr = true;
-      setorgconnumError("Please enter your org contact number  ");
+      setorgconnumError("Please enter your contact number  ");
     } else {
       if (orgconnum.length < 10) {
         orgconnumEr = true;
@@ -148,7 +160,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
     }
     if (!orgadd) {
       orgaddEr = true;
-      setorgaddError("Please enter addressoa  ");
+      setorgaddError("Please enter address  ");
     } else {
       orgaddEr = false;
       setorgaddError("");
@@ -156,7 +168,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
 
     if (!orgabout) {
       orgaboutEr = true;
-      setorgaboutError("Please enter your org about   ");
+      setorgaboutError("Please enter your about   ");
     } else {
       orgaboutEr = false;
       setorgaboutError("");
@@ -177,11 +189,20 @@ const OrganizationRegister_Screen = ({ navigation }) => {
 
     if (!orgpassword) {
       orgpasswordEr = true;
-      setorgpasswordError("Please enter your  org password");
+      setorgpasswordError("Please enter your password");
     } else {
       if (orgpassword.length < 6) {
         orgpasswordEr = true;
         setorgpasswordError("Password must be of 6 length");
+      } else if (
+        !/[A-Z]/.test(orgpassword) ||
+        !/[@#$%^&+=]/.test(orgpassword) ||
+        !/[0-9]/.test(orgpassword)
+      ) {
+        orgpasswordEr = true;
+        setorgpasswordError(
+          "Password must contain  at least one capital letter, special symbol, digit, and at least 6 characters."
+        );
       } else {
         orgpasswordEr = false;
         setorgpasswordError("");
@@ -212,6 +233,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
   };
 
   const picupload = async () => {
+    setIsLoading(true);
     if (!orgImage) {
       alert("Please select your organization logo");
       return 0;
@@ -257,7 +279,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
           )}
         </View>
         {orgImageError ? (
-          <Text style={[styles.error, { marginLeft: 0 }]}>{orgImageError}</Text>
+          <Text style={[styles.error]}>{orgImageError}</Text>
         ) : null}
         <View style={{ flexDirection: "row" }}>
           <MyButton
@@ -337,16 +359,35 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         style={[orgpasswordError && styles.inputError]}
         outstyle={styles.lblinput}
         onChangeText={(text) => setorgpassword(text)}
+        secureTextEntry={!checked}
         value={orgpassword}
       />
       {orgpasswordError ? (
         <Text style={styles.error}>{orgpasswordError}</Text>
       ) : null}
+      <View
+        style={{
+          marginLeft: moderateScale(27),
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Checkbox
+          status={checked ? "checked" : "unchecked"}
+          onPress={() => {
+            setChecked(!checked);
+          }}
+          color="#E0BAFD"
+        />
+        <Text>Show password</Text>
+      </View>
 
       <MyButton
         title="Register"
         style={styles.btn}
         fontStyle={styles.fontstyle}
+        isLoading={isLoading}
+        disabled={isLoading}
         onPress={() => {
           handleSubmit();
         }}
@@ -355,6 +396,7 @@ const OrganizationRegister_Screen = ({ navigation }) => {
         title="Clear all"
         onPress={() => clearAll()}
         style={styles.btn}
+        disabled={isLoading}
         fontStyle={styles.fontstyle}
       />
       <MyButton

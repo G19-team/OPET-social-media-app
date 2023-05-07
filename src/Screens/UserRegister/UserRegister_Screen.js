@@ -1,5 +1,5 @@
 import { View, Text, Alert, Pressable } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { styles } from "./Style";
 
@@ -14,12 +14,16 @@ import * as ImagePicker from "expo-image-picker";
 
 import FitImage from "react-native-fit-image";
 
+import { Checkbox } from "react-native-paper";
+
 import { Picker } from "@react-native-picker/picker";
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
 import { auth, db, storage } from "../../db/firebaseConfig";
+
+import axios from "axios";
 
 //for radio button
 import RadioGroup from "react-native-radio-buttons-group";
@@ -28,24 +32,22 @@ import RadioGroup from "react-native-radio-buttons-group";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { moderateScale } from "react-native-size-matters";
+import alert from "../../Utills/alert";
 
 // user create in db
 
 const UserRegister_Screen = ({ navigation }) => {
-  const date = new Date();
-  const currentYear = date.getFullYear().toString();
-  const currentMonth = (date.getMonth() + 1).toString(); // note: months are 0-indexed, so we add 1 to get the current month
-  const currentDay = date.getDate().toString();
   const [fname, setfname] = useState(null);
   const [mname, setmname] = useState(null);
   const [lname, setlname] = useState(null);
-  const [city, setcity] = useState(null);
-  const [country, setcountry] = useState(null);
-  const [state, setstate] = useState(null);
+  const [city, setcity] = useState({});
+  const [country, setcountry] = useState({});
+  const [state, setstate] = useState({});
   const [postalcode, setpostalcode] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [email, setEmail] = useState(null);
   const [gender, setGender] = useState(null);
+  const [checked, setChecked] = useState(false);
   const [radioButtons, setRadioButtons] = useState([
     {
       id: "1", // acts as primary key, should be unique and non-empty string
@@ -63,25 +65,24 @@ const UserRegister_Screen = ({ navigation }) => {
       value: "Other",
     },
   ]);
-  const [bdate, setbdate] = useState(
-    new Date(currentYear / currentMonth / currentDay)
-  );
+  const [bdate, setbdate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [confirmPassword, setConfirmPassword] = useState("");
   // const [username, setusername] = useState(null);
   const [password, setPassword] = useState(null);
   const [orgid, setorgid] = useState(null);
   const [usrImage, setUsrImage] = useState(null);
   const [selectrole, setselectrole] = useState("leader");
   const [selectsubrole, setselectsubrole] = useState("Manager");
+  const [allCountries, setAllCountrie] = useState([]);
+  const [allState, setAllState] = useState([]);
+  const [allCity, setAllCity] = useState([]);
 
   //const [loading, setLoading] = React.useState(false);
   const [usrImageError, setUsrImageError] = useState(null);
   const [fnameError, setfnameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [mnameError, setmnameError] = useState("");
   const [lnameError, setlnameError] = useState("");
   const [cityError, setcityError] = useState("");
@@ -94,6 +95,79 @@ const UserRegister_Screen = ({ navigation }) => {
   const [usernameError, setusernameError] = useState("");
   const [roleError, setroleError] = useState("");
   const [orgidError, setorgidError] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    getCountries();
+  }, []);
+
+  useEffect(() => {
+    country && getState(country);
+  }, [country]);
+
+  useEffect(() => {
+    state && getCity(country, state);
+  }, [state, country]);
+
+  const getCountries = () => {
+    var config = {
+      method: "get",
+      url: "https://api.countrystatecity.in/v1/countries",
+      headers: {
+        "X-CSCAPI-KEY":
+          "V3Z1UmtlZ2RCZU1kQW9DTE1raDBqYllhV1pzV1VpdTF3Q0I2R1Nxcw==",
+      },
+    };
+    axios(config)
+      .then(function (response) {
+        setAllCountrie(response.data);
+        // console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const getState = (country) => {
+    var config = {
+      method: "get",
+      url: `https://api.countrystatecity.in/v1/countries/${country.iso2}/states`,
+      headers: {
+        "X-CSCAPI-KEY":
+          "V3Z1UmtlZ2RCZU1kQW9DTE1raDBqYllhV1pzV1VpdTF3Q0I2R1Nxcw==",
+      },
+    };
+
+    axios(config)
+      .then(function (response) {
+        setAllState(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const getCity = (country, state) => {
+    var config = {
+      method: "get",
+      url: `https://api.countrystatecity.in/v1/countries/${country.iso2}/states/${state.iso2}/cities`,
+
+      headers: {
+        "X-CSCAPI-KEY":
+          "V3Z1UmtlZ2RCZU1kQW9DTE1raDBqYllhV1pzV1VpdTF3Q0I2R1Nxcw==",
+      },
+    };
+
+    axios(config)
+      .then(function (response) {
+        setAllCity(response.data);
+        // console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
   function onPressRadioButton(radioButtonsArray) {
     setRadioButtons(radioButtonsArray);
@@ -112,15 +186,14 @@ const UserRegister_Screen = ({ navigation }) => {
     setfname("");
     setmname("");
     setlname("");
-    setcity("");
-    setcountry("");
-    setstate("");
-    setstate("");
+    setcity({});
+    setcountry({});
+    setstate({});
     setpostalcode("");
     setPhoneNumber("");
     setEmail("");
     setGender("");
-    setbdate("");
+    setbdate(new Date());
     setPassword("");
     setorgid("");
     setUsrImage("");
@@ -135,9 +208,9 @@ const UserRegister_Screen = ({ navigation }) => {
       Lastname: lname.toLowerCase(),
       Role: selectrole,
       Subrole: selectsubrole,
-      Country: country,
-      City: city,
-      State: state,
+      Country: country.name,
+      City: city.name,
+      State: state.name,
       Postalcode: postalcode,
       Phonenumber: phoneNumber,
       Email: email,
@@ -157,8 +230,12 @@ const UserRegister_Screen = ({ navigation }) => {
           "Log in credential will be provided by your admin through email functionallity"
         );
         clearAll();
+        setIsLoading(false);
       })
-      .catch((e) => alert("registartion failed", "Something went wrong!" + e));
+      .catch((e) => {
+        alert("registartion failed", "Something went wrong!" + e);
+        setIsLoading(false);
+      });
   };
 
   const choosepic = async () => {
@@ -169,12 +246,12 @@ const UserRegister_Screen = ({ navigation }) => {
     }).then((result) => {
       if (!result?.canceled) {
         setUsrImage(result.assets[0].uri);
-        console.log(result.assets[0].uri);
       }
     });
   };
 
   const picupload = async (uid) => {
+    setIsLoading(true);
     let result = await fetch(usrImage);
     const blobImage = await result.blob();
     const filename = usrImage.substring(usrImage.lastIndexOf("/") + 1);
@@ -186,6 +263,7 @@ const UserRegister_Screen = ({ navigation }) => {
       (snapshot) => {},
       (error) => {
         Alert.alert("Failed to upload", "Please try again..");
+        setIsLoading(false);
       },
 
       () => {
@@ -210,7 +288,8 @@ const UserRegister_Screen = ({ navigation }) => {
       });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setIsLoading(true);
     let emailEr = false;
     let userImageEr = false;
     let passwordEr = false;
@@ -265,6 +344,15 @@ const UserRegister_Screen = ({ navigation }) => {
       if (password.length < 6) {
         passwordEr = true;
         setPasswordError("Password must be of 6 length");
+      } else if (
+        !/[A-Z]/.test(password) ||
+        !/[@#$%^&+=]/.test(password) ||
+        !/[0-9]/.test(password)
+      ) {
+        passwordEr = true;
+        setPasswordError(
+          "Password must contain  at least one capital letter, special symbol, digit, and at least 6 characters."
+        );
       } else {
         passwordEr = false;
         setPasswordError("");
@@ -274,22 +362,37 @@ const UserRegister_Screen = ({ navigation }) => {
       fnameEr = true;
       setfnameError("Please enter your first name  ");
     } else {
-      fnameEr = false;
-      setfnameError("");
+      if (!/^[a-zA-Z]+$/.test(fname)) {
+        fnameEr = true;
+        setfnameError("Please enter only alphabets");
+      } else {
+        fnameEr = false;
+        setfnameError("");
+      }
     }
     if (!mname) {
       mnameEr = true;
       setmnameError("Please enter your middle name ");
     } else {
-      mnameEr = false;
-      setmnameError("");
+      if (!/^[a-zA-Z]+$/.test(mname)) {
+        mnameEr = true;
+        setmnameError("Please enter only alphabets");
+      } else {
+        mnameEr = false;
+        setmnameError("");
+      }
     }
     if (!lname) {
       lnameEr = true;
       setlnameError("Please enter your last name ");
     } else {
-      lnameEr = false;
-      setlnameError("");
+      if (!/^[a-zA-Z]+$/.test(lname)) {
+        lnameEr = true;
+        setlnameError("Please enter only alphabets");
+      } else {
+        lnameEr = false;
+        setlnameError("");
+      }
     }
     if (!selectsubrole) {
       selectsubroleEr = true;
@@ -314,17 +417,17 @@ const UserRegister_Screen = ({ navigation }) => {
     }
     if (!state) {
       stateEr = true;
-      setpostalcodeError("Please enter your postal code ");
+      setstateError("Please enter your state name ");
     } else {
       stateEr = false;
-      setpostalcodeError("");
+      setstateError("");
     }
     if (!postalcode) {
       postalcodeEr = true;
-      setstateError("Please enter your state name ");
+      setpostalcodeError("Please enter your postal code ");
     } else {
       postalcodeEr = false;
-      setstateError("");
+      setpostalcodeError("");
     }
     if (!phoneNumber) {
       phoneNumberER = true;
@@ -353,6 +456,16 @@ const UserRegister_Screen = ({ navigation }) => {
     if (!orgid) {
       orgidEr = true;
       setorgidError("Please enter your org id ");
+    } else if (orgid) {
+      const orgRef = doc(db, "organization", orgid);
+      const orgDoc = await getDoc(orgRef);
+      if (!orgDoc.exists()) {
+        orgidEr = true;
+        alert(
+          "Wrong organization id",
+          "your organization doest exist please check your orgnization id"
+        );
+      }
     } else {
       orgidEr = false;
       setorgidError("");
@@ -378,6 +491,10 @@ const UserRegister_Screen = ({ navigation }) => {
       )
     ) {
       Registration();
+      // console.log("registered");
+    } else {
+      setIsLoading(false);
+      console.log("please fill all the field and check for any mismatch");
     }
 
     // it is red line validation ...
@@ -465,7 +582,6 @@ const UserRegister_Screen = ({ navigation }) => {
               <Picker.Item label="Employee" value="employee" />
             </Picker>
           </View>
-
           {selectrole === "leader" && (
             <View style={styles.picker}>
               <Text style={styles.lable}>
@@ -515,7 +631,6 @@ const UserRegister_Screen = ({ navigation }) => {
               </Picker>
             </View>
           )}
-
           {selectrole === "employee" && (
             <View style={styles.picker}>
               <Text style={styles.lable}>
@@ -621,35 +736,86 @@ const UserRegister_Screen = ({ navigation }) => {
             </View>
           )}
           {roleError ? <Text style={styles.error}>{roleError}</Text> : null}
-
-          <LbInputBox
+          <View style={styles.picker}>
+            <Text style={styles.lable}>Country :</Text>
+            <Picker
+              style={[styles.innerpicker, countryError && styles.inputError]}
+              selectedValue={country}
+              onValueChange={(itemValue) => {
+                setcountry(itemValue);
+              }}
+            >
+              {allCountries.map((data) => {
+                return (
+                  <Picker.Item label={data.name} value={data} key={data.id} />
+                );
+              })}
+            </Picker>
+          </View>
+          {/* <LbInputBox
             style={[countryError && styles.inputError]}
             lable="Country :"
             onChangeText={(text) => setcountry(text)}
             value={country}
-          />
+          /> */}
           {countryError ? (
             <Text style={styles.error}>{countryError}</Text>
           ) : null}
-          <LbInputBox
+
+          <View style={styles.picker}>
+            <Text style={styles.lable}>State :</Text>
+            <Picker
+              style={[styles.innerpicker, stateError && styles.inputError]}
+              selectedValue={state}
+              onValueChange={(itemValue) => {
+                setstate(itemValue);
+              }}
+            >
+              {allState.map((data) => {
+                return (
+                  <Picker.Item label={data.name} value={data} key={data.id} />
+                );
+              })}
+            </Picker>
+          </View>
+
+          {/* <LbInputBox
             style={[stateError && styles.inputError]}
             lable="State / Region :"
             onChangeText={(text) => setstate(text)}
             value={state}
-          />
+          /> */}
           {stateError ? <Text style={styles.error}>{stateError}</Text> : null}
-          <LbInputBox
+          <View style={styles.picker}>
+            <Text style={styles.lable}>City :</Text>
+            <Picker
+              style={[styles.innerpicker, cityError && styles.inputError]}
+              selectedValue={city}
+              onValueChange={(itemValue) => {
+                setcity(itemValue);
+              }}
+            >
+              {!allCity && (
+                <Picker.Item label={"Select City"} value={"Select City"} />
+              )}
+              {allCity.map((data) => {
+                return (
+                  <Picker.Item label={data.name} value={data} key={data.id} />
+                );
+              })}
+            </Picker>
+          </View>
+          {/* <LbInputBox
             style={[cityError && styles.inputError]}
             lable="City :"
             onChangeText={(text) => setcity(text)}
             value={city}
-          />
+          /> */}
           {cityError ? <Text style={styles.error}>{cityError}</Text> : null}
-          {/* </View> */}
-          {/* <View style={styles.twobox}> */}
+
           <LbInputBox
             lable="Postal code :"
-            style={[stateError && styles.inputError]}
+            style={[postalcodeError && styles.inputError]}
             onChangeText={(text) => setpostalcode(text)}
             keyboardType="numeric"
             value={postalcode}
@@ -657,7 +823,7 @@ const UserRegister_Screen = ({ navigation }) => {
           {postalcodeError ? (
             <Text style={styles.error}>{postalcodeError}</Text>
           ) : null}
-          {/* </View> */}
+
           <LbInputBox
             style={[phoneNumberError && styles.inputError]}
             lable="Phone number :"
@@ -701,7 +867,7 @@ const UserRegister_Screen = ({ navigation }) => {
               style={[bdateError && styles.inputError]}
               textStyle={{ textAlign: "center" }}
               lable="Birth date :"
-              value={bdate.toLocaleDateString()}
+              value={bdate.toDateString()}
               iconName={"calendar-outline"}
               editable={false}
             />
@@ -709,7 +875,8 @@ const UserRegister_Screen = ({ navigation }) => {
           {showDatePicker && (
             <DateTimePicker
               testID="dateTimePicker"
-              value={new Date(bdate)}
+              value={new Date()}
+              maximumDate={new Date()}
               mode={"date"}
               is24Hour={true}
               onChange={onChange}
@@ -731,12 +898,28 @@ const UserRegister_Screen = ({ navigation }) => {
           <LbInputBox
             style={[passwordError && styles.inputError]}
             lable="Password :"
+            secureTextEntry={!checked}
             onChangeText={(text) => setPassword(text)}
             value={password}
           />
           {passwordError ? (
             <Text style={styles.error}>{passwordError}</Text>
           ) : null}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Checkbox
+              status={checked ? "checked" : "unchecked"}
+              onPress={() => {
+                setChecked(!checked);
+              }}
+              color="#E0BAFD"
+            />
+            <Text>Show password</Text>
+          </View>
         </View>
 
         <MyButton
@@ -744,12 +927,15 @@ const UserRegister_Screen = ({ navigation }) => {
           style={styles.btn}
           fontStyle={styles.fontstyle}
           onPress={() => handleSubmit()}
+          isLoading={isLoading}
+          disabled={isLoading}
         />
         <MyButton
           title="Clear All"
           style={styles.btn}
           fontStyle={styles.fontstyle}
           onPress={() => clearAll()}
+          disabled={isLoading}
         />
         <MyButton
           title="< Back"

@@ -96,7 +96,8 @@ const DrawerNav = ({ navigation }) => {
           onPress={async () => {
             try {
               const result = await Share.share({
-                message: "OPET | A social media application for office purpose",
+                message:
+                  "OPET | A social media application for office purpose \n\n Url : https://expo.dev/accounts/t_g20/projects/OPET/builds/9d0176c8-0e70-410f-a68c-654b0306e567 ",
               });
               if (result.action === Share.sharedAction) {
                 if (result.activityType) {

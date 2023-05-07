@@ -12,6 +12,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Colors } from "../Assets/Colors/Colors";
 
+import { ActivityIndicator } from "react-native-paper";
+
 function MyButton({
   title,
   onPress,
@@ -21,35 +23,44 @@ function MyButton({
   iconName,
   iconSize,
   iconColor,
+  isLoading,
+  disabled,
   ...props
 }) {
   return (
     <TouchableOpacity
+      disabled={disabled}
       style={[styles.container, style]}
       onPress={onPress}
       {...props}
     >
       <View style={styles.innercontainer}>
-        <Text
-          name="title"
-          style={[
-            styles.title,
-            fontStyle,
-            (isIcon === "true" || iconName) && {
-              marginRight: moderateScale(7),
-            },
-          ]}
-        >
-          {title || title != null ? title : "Press me !"}
-        </Text>
-        {isIcon === "true" ||
-          (iconName && (
-            <Ionicons
-              name={iconName ? iconName : "arrow-forward"}
-              size={iconSize ? iconSize : moderateScale(23)}
-              color={iconColor ? iconColor : "black"}
-            />
-          ))}
+        {isLoading ? (
+          <ActivityIndicator size={"small"} color={"#ffffff"} />
+        ) : (
+          <>
+            <Text
+              name="title"
+              style={[
+                styles.title,
+                fontStyle,
+                (isIcon === "true" || iconName) && {
+                  marginRight: moderateScale(7),
+                },
+              ]}
+            >
+              {title || title != null ? title : "Press me !"}
+            </Text>
+            {isIcon === "true" ||
+              (iconName && (
+                <Ionicons
+                  name={iconName ? iconName : "arrow-forward"}
+                  size={iconSize ? iconSize : moderateScale(23)}
+                  color={iconColor ? iconColor : "black"}
+                />
+              ))}
+          </>
+        )}
       </View>
     </TouchableOpacity>
   );

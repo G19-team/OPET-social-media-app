@@ -270,6 +270,10 @@ const UploadPost_Screen = ({ navigation }) => {
   };
 
   const checkFileType = (image, fileResult, video) => {
+    if (!image && !caption) {
+      alert("Warning!", "Please provide content for upload.");
+      return 0;
+    }
     if (image) {
       dbUploadFiles(
         image.uri,

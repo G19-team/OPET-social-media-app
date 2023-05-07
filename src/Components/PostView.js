@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 
 import { Video, AVPlaybackStatus } from "expo-av";
 import FitImage from "react-native-fit-image";
@@ -26,12 +26,16 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const PostView = ({ data, postId, orgId, index, role }) => {
+  const [usrDataImage, setUsrDataImage] = useState();
+  const [usrDataName, setUsrDataName] = useState();
   const postRef = doc(
     db,
     "organization",
@@ -41,6 +45,19 @@ const PostView = ({ data, postId, orgId, index, role }) => {
     "posts",
     postId
   );
+
+  useLayoutEffect(() => {
+    const unsub = onSnapshot(
+      doc(db, "organization", orgId, "users", data.userId),
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          setUsrDataImage(data.UserImage);
+          setUsrDataName(data.Firstname + " " + data.Lastname);
+        }
+      }
+    );
+  }, []);
 
   const deletePost = async () => {
     try {
@@ -109,19 +126,19 @@ const PostView = ({ data, postId, orgId, index, role }) => {
         <View style={styles.postheader}>
           <View style={styles.postinfo}>
             <Image
-              source={{ uri: data.userimage }}
+              source={{ uri: usrDataImage }}
               resizeMode="cover"
               style={styles.profilepicture}
             />
 
-            <Text style={styles.name}>{data.username}</Text>
+            <Text style={styles.name}>{usrDataName && usrDataName}</Text>
           </View>
           {data.userId === auth.currentUser.uid && (
             <TouchableOpacity
               onPress={(postRef, url = data.URL) =>
                 alert(
                   "Delete post",
-                  "Are you sure you want to delete this suggestion? This action cannot be undone.",
+                  "Are you sure you want to delete this post? This action cannot be undone.",
                   [
                     {
                       text: "Yes",

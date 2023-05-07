@@ -17,6 +17,7 @@ const LbInputBox = ({
   style,
   outstyle,
   textStyle,
+  indicator,
   ...props
 }) => {
   return (

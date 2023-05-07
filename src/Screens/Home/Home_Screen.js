@@ -1,4 +1,4 @@
-import { View, Text, RefreshControl } from "react-native";
+import { View, Text, RefreshControl, FlatList } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
 import PostView from "../../Components/PostView";
 import { Colors } from "../../Assets/Colors/Colors";

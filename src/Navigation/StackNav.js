@@ -61,7 +61,7 @@ const StackNav = ({ isUserLoggedIn }) => {
       <Stack.Screen
         name={"EditProfile_Screen"}
         component={EditProfile_Screen}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: "Edit your profile" }}
       />
       <Stack.Screen
         name={"DocumentViewer_Screen"}

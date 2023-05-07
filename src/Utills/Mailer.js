@@ -11,7 +11,7 @@ export const sendEmail = async (
   templateId
 ) => {
   const apiKey =
-    "API KEY";
+    "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";
   const url = "https://api.sendgrid.com/v3/mail/send";
 
   const data = {

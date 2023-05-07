@@ -164,7 +164,9 @@ const EditProfile_Screen = ({ navigation }) => {
       allowsEditing: true,
       aspect: [3, 3],
     }).then((result) => {
+      if (!result?.canceled) {
       setImage(result.assets[0].uri);
+      }
       this.bs.current.snapTo(1);
     });
   };
@@ -206,7 +208,7 @@ const EditProfile_Screen = ({ navigation }) => {
     <KeyboardAwareScrollView style={styles.container}>
       <BottomSheet
         ref={this.bs}
-        snapPoints={[330, 0]}
+        snapPoints={[310, 0]}
         renderContent={this.renderInner}
         renderHeader={this.renderHeader}
         initialSnap={1}

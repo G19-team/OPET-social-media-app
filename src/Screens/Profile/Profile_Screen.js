@@ -221,12 +221,12 @@ const Profile_Screen = ({ navigation }) => {
               <View>
                 <Text
                   style={{
-                    fontSize: scale(20),
+                    fontSize: scale(18),
                     paddingHorizontal: 10,
                     fontWeight: "bold",
                   }}
                 >
-                  Post :
+                  Your post :
                 </Text>
               </View>
             </>
