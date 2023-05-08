@@ -1,7 +1,7 @@
 import axios from "axios";
 import alert from "./alert";
 
-export const sendEmail = async (
+const sendEmail = async (
   orgName,
   toEmail,
   subject,
@@ -47,3 +47,5 @@ export const sendEmail = async (
     );
   }
 };
+
+export default sendEmail;
