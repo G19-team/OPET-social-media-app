@@ -2,7 +2,7 @@ import { StyleSheet, View, Platform } from "react-native";
 import { StatusBar } from "react-native";
 import "react-native-gesture-handler";
 import { Colors } from "./src/Assets/Colors/Colors";
-import { registerRootComponent } from "expo";
+
 import StackNav from "./src/Navigation/StackNav";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -28,7 +28,5 @@ const styles = StyleSheet.create({
     marginVertical: Platform.OS === "web" ? 10 : 0,
   },
 });
-
-registerRootComponent(App);
 
 export default App;

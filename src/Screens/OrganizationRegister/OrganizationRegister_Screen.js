@@ -20,7 +20,7 @@ import { setDoc, doc } from "firebase/firestore";
 import FitImage from "react-native-fit-image";
 
 import * as ImagePicker from "expo-image-picker";
-import sendEmail from "../../Utills/Mailer";
+import sendEmail from "../../Utills/Mailer.js";
 import { moderateScale } from "react-native-size-matters";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
