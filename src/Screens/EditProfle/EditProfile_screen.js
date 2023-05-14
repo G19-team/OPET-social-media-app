@@ -39,7 +39,12 @@ import Animated from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 
 import { KeyboardAvoidingView } from "react-native";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { db, storage, auth } from "../../db/firebaseConfig";
 import { doc, updateDoc, onSnapshot } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -55,6 +60,7 @@ const EditProfile_Screen = ({ navigation }) => {
   const [image, setImage] = useState(
     "https://aniportalimages.s3.amazonaws.com/media/details/1639049711050_12021122709484420211227101334.jpg"
   );
+  const [oldImage, setOldImage] = useState("");
   const { colors } = useTheme();
 
   const [fname, setfname] = useState(null);
@@ -64,6 +70,7 @@ const EditProfile_Screen = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [city, setcity] = useState(null);
   const [country, setcountry] = useState(null);
+  const [state, setstate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
@@ -85,6 +92,7 @@ const EditProfile_Screen = ({ navigation }) => {
         setEmail(data.Email);
         setcity(data.City);
         setcountry(data.Country);
+        setstate(data.State);
       } else {
         console.log("No such document!");
       }
@@ -121,6 +129,7 @@ const EditProfile_Screen = ({ navigation }) => {
   };
 
   const picupload = async () => {
+    setIsLoading(true);
     if (
       !image ||
       !fname ||
@@ -135,27 +144,35 @@ const EditProfile_Screen = ({ navigation }) => {
       setIsLoading(false);
       return 0;
     }
-    setIsLoading(true);
-    let result = await fetch(image);
+    if (!oldImage == "") {
+      const imgRef = ref(storage, oldImage ? oldImage : image);
+      await deleteObject(imgRef).then(() => {
+        setOldImage("");
+      });
+      let result = await fetch(image);
 
-    const blobImage = await result.blob();
-    const filename = image.substring(image.lastIndexOf("/") + 1);
-    const storageRef = ref(storage, "USRPIC/" + filename);
-    const uploadTask = uploadBytesResumable(storageRef, blobImage);
+      const blobImage = await result.blob();
+      const filename = image.substring(image.lastIndexOf("/") + 1);
+      const storageRef = ref(storage, "USRPIC/" + filename);
+      const uploadTask = uploadBytesResumable(storageRef, blobImage);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {},
-      (error) => {
-        alert("Failed to upload", "Please try again..");
-      },
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          alert("Failed to upload", "Please try again..");
+        },
 
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          update(downloadURL);
-        });
-      }
-    );
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            update(downloadURL);
+          });
+        }
+      );
+    } else {
+      alert("Warnign!", "Please select your profile picture");
+      setIsLoading(false);
+    }
   };
 
   const choosePhotoFromLibrary = async () => {
@@ -165,7 +182,8 @@ const EditProfile_Screen = ({ navigation }) => {
       aspect: [3, 3],
     }).then((result) => {
       if (!result?.canceled) {
-      setImage(result.assets[0].uri);
+        setOldImage(image);
+        setImage(result.assets[0].uri);
       }
       this.bs.current.snapTo(1);
     });
@@ -375,6 +393,22 @@ const EditProfile_Screen = ({ navigation }) => {
         </View>
         <View style={styles.action}>
           <Icon name="map-marker-outline" color={colors.text} size={20} />
+          <TextInput
+            placeholder="Enter your State"
+            placeholderTextColor="#666666"
+            onChangeText={(text) => setstate(text)}
+            autoCorrect={false}
+            value={state}
+            style={[
+              styles.textInput,
+              {
+                color: colors.text,
+              },
+            ]}
+          />
+        </View>
+        <View style={styles.action}>
+          <Icon name="home-city-outline" color={colors.text} size={20} />
           <TextInput
             placeholder="Enter your City"
             placeholderTextColor="#666666"

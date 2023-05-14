@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -10,19 +10,29 @@ import { Button } from "react-native-paper";
 
 import Profile_Screen from "../Screens/Profile/Profile_Screen";
 import AboutOrganization_Screen from "../Screens/AboutOrganization/AboutOrganization_Screen";
+import TermsAndCondition_Screen from "../Screens/TermsAndCondition/TermsAndCondition_Screen";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { scale, moderateScale } from "react-native-size-matters";
 
 import { signOut } from "firebase/auth";
-import { auth } from "../db/firebaseConfig";
+import { auth, db } from "../db/firebaseConfig";
 
 import { Colors } from "../Assets/Colors/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import alert from "../Utills/alert";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const DrawerNav = ({ navigation }) => {
+  const [downloadLink, setDownloadLink] = useState("");
+  useLayoutEffect(() => {
+    const unsub = onSnapshot(doc(db, "opet_information", "link"), (doc) => {
+      let data = doc.data();
+      setDownloadLink(data.link);
+    });
+  }, []);
+
   const Drawer = createDrawerNavigator();
   const logOut = () => {
     signOut(auth)
@@ -79,6 +89,15 @@ const DrawerNav = ({ navigation }) => {
           sceneContainerStyle: { backgroundColor: Colors.primaryColor500 },
         }}
       />
+      <Drawer.Screen
+        name="Terms and conditions"
+        component={TermsAndCondition_Screen}
+        options={{
+          drawerIcon: ({ size, color }) => {
+            return <Icon name="file-alert-outline" color={color} size={size} />;
+          },
+        }}
+      />
     </Drawer.Navigator>
   );
 
@@ -97,7 +116,8 @@ const DrawerNav = ({ navigation }) => {
             try {
               const result = await Share.share({
                 message:
-                  "OPET | A social media application for office purpose \n\n Url : https://expo.dev/accounts/t_g20/projects/OPET/builds/9d0176c8-0e70-410f-a68c-654b0306e567 ",
+                  "Discover OPET - the professional social media app for office use. Connect and collaborate seamlessly with colleagues.\n\nDownload now: " +
+                  downloadLink,
               });
               if (result.action === Share.sharedAction) {
                 if (result.activityType) {

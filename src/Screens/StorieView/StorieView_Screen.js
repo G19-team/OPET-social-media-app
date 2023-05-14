@@ -4,7 +4,12 @@ import FitImage from "react-native-fit-image";
 import { StatusBar } from "react-native";
 import { moderateScale } from "react-native-size-matters";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import {
+  uploadBytesResumable,
+  getDownloadURL,
+  ref,
+  deleteObject,
+} from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storage, auth, db } from "../../db/firebaseConfig";
 import {
@@ -24,6 +29,8 @@ const StorieView_Screen = ({ route, navigation }) => {
 
   const deleteStory = () => {
     const id = AsyncStorage.getItem("orgId").then(async (id) => {
+      const imgRef = ref(storage, storie);
+      deleteObject(imgRef);
       const userRef = doc(
         db,
         "organization",

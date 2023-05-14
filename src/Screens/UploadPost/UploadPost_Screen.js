@@ -235,8 +235,8 @@ const UploadPost_Screen = ({ navigation }) => {
       ],
     })
       .then((result) => {
-        if (!result?.canceled) {
-          console.log(result);
+        if (result.type == "success") {
+          console.log(result.type);
           setFileResult(result);
         }
       })
@@ -270,7 +270,7 @@ const UploadPost_Screen = ({ navigation }) => {
   };
 
   const checkFileType = (image, fileResult, video) => {
-    if (!image && !caption) {
+    if (!image && !caption && !fileResult && !video) {
       alert("Warning!", "Please provide content for upload.");
       return 0;
     }

@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 
 import { styles } from "./Style";
 
@@ -15,12 +15,12 @@ import { Checkbox } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { db, storage } from "../../db/firebaseConfig";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, onSnapshot } from "firebase/firestore";
 
 import FitImage from "react-native-fit-image";
 
 import * as ImagePicker from "expo-image-picker";
-import sendEmail from "../../Utills/Mailer.js";
+import sendEmail from "../../Utills/Mailer";
 import { moderateScale } from "react-native-size-matters";
 
 const OrganizationRegister_Screen = ({ navigation }) => {
@@ -46,6 +46,20 @@ const OrganizationRegister_Screen = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [sendGridApi, setSendGridApi] = useState();
+  const [sendGridUrl, setSendGridUrl] = useState();
+  const [sendGriFrom, setSendGridFrom] = useState();
+
+  useLayoutEffect(() => {
+    const unsub = onSnapshot(doc(db, "opet_information", "mailer"), (doc) => {
+      let data = doc.data();
+      console.log(data);
+      setSendGridApi(data.key);
+      setSendGridUrl(data.url);
+      setSendGridFrom(data.from);
+    });
+  }, []);
+
   const sendMail = (orgName, toEmail, subject, orgId, userName, password) => {
     sendEmail(
       orgName,
@@ -54,8 +68,16 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       orgId,
       userName,
       password,
-      "d-37a62b287b0f446caf297f63fa04ef9e"
-    );
+      "d-37a62b287b0f446caf297f63fa04ef9e",
+      sendGridApi,
+      sendGridUrl,
+      sendGriFrom
+    ).then(() => {
+      alert(
+        "Registered",
+        "you will receive email about your credanitials soon, please check your emails"
+      );
+    });
   };
 
   const clearAll = () => {
@@ -96,10 +118,6 @@ const OrganizationRegister_Screen = ({ navigation }) => {
       navigation.replace("Start_Screen");
       setIsLoading(false);
       clearAll();
-      alert(
-        "Registered",
-        "you will receive email about your credanitials soon, please check your emails"
-      );
 
       sendMail(
         orgname,
