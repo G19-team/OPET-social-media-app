@@ -66,7 +66,7 @@ const DocumentView = ({ type, name, size }) => {
         break;
       case "text/html":
         setDocType({
-          type: "js",
+          type: "html",
           path: require("../Assets/Icons/Html-icon.png"),
           lightColor: "lightgray",
           darkColor: "#FF694B",
@@ -74,7 +74,7 @@ const DocumentView = ({ type, name, size }) => {
         break;
       case "text/css":
         setDocType({
-          type: "js",
+          type: "css",
           path: require("../Assets/Icons/Css-icon.png"),
           lightColor: "lightgray",
           darkColor: "#6EAADC",
@@ -82,7 +82,7 @@ const DocumentView = ({ type, name, size }) => {
         break;
       case "application/vnd.ms-powerpoint":
         setDocType({
-          type: "js",
+          type: "ppt",
           path: require("../Assets/Icons/Ppt-icon.png"),
           lightColor: "lightgray",
           darkColor: "#FF1700",
@@ -90,23 +90,31 @@ const DocumentView = ({ type, name, size }) => {
         break;
       case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
         setDocType({
-          type: "js",
-          path: require("../Assets/Icons/Xml-icon.png"),
+          type: "ppt",
+          path: require("../Assets/Icons/Ppt-icon.png"),
           lightColor: "lightgray",
-          darkColor: "#F29C1F",
+          darkColor: "#FF1700",
         });
         break;
       case "application/xml":
         setDocType({
-          type: "js",
+          type: "xml",
           path: require("../Assets/Icons/Xml-icon.png"),
           lightColor: "lightgray",
           darkColor: "#F29C1F",
         });
         break;
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        setDocType({
+          type: "excel",
+          path: require("../Assets/Icons/Excel-icon.png"),
+          lightColor: "lightgray",
+          darkColor: "#23A566",
+        });
+        break;
       case "text/x-c":
         setDocType({
-          type: "js",
+          type: "c",
           path: require("../Assets/Icons/C-icon.png"),
           lightColor: "lightgray",
           darkColor: "#F76C82",

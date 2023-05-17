@@ -283,6 +283,7 @@ const UserRegister_Screen = ({ navigation }) => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        setIsLoading(false);
         alert(errorMessage);
         console.log(errorMessage);
       });

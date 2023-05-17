@@ -87,7 +87,7 @@ const Home_Screen = () => {
   ) : (
     <>
       <View style={{ flex: 1, zIndex: -2 }}>
-        <FlashList
+        <FlatList
           ref={ref}
           estimatedItemSize={463}
           refreshControl={

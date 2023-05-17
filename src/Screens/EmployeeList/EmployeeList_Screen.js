@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: moderateScale(17),
     marginLeft: moderateScale(10),
-    marginRight: moderateScale(30),
+    marginRight: moderateScale(110),
   },
   subheading: {
     color: "grey",

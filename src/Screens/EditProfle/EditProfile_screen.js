@@ -170,8 +170,7 @@ const EditProfile_Screen = ({ navigation }) => {
         }
       );
     } else {
-      alert("Warnign!", "Please select your profile picture");
-      setIsLoading(false);
+      update(image);
     }
   };
 
@@ -288,10 +287,26 @@ const EditProfile_Screen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            {fname} {mname} {lname}
+            {lname} {fname} {mname}
           </Text>
         </View>
 
+        <View style={styles.action}>
+          <FontAwesome name="user-o" color={colors.text} size={20} />
+          <TextInput
+            placeholder="Enter your Last Name"
+            placeholderTextColor="#666666"
+            onChangeText={(text) => setlname(text)}
+            autoCorrect={false}
+            value={lname}
+            style={[
+              styles.textInput,
+              {
+                color: colors.text,
+              },
+            ]}
+          />
+        </View>
         <View style={styles.action}>
           <FontAwesome name="user-o" color={colors.text} size={20} />
           <TextInput
@@ -325,22 +340,7 @@ const EditProfile_Screen = ({ navigation }) => {
             ]}
           />
         </View>
-        <View style={styles.action}>
-          <FontAwesome name="user-o" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Enter your Last Name"
-            placeholderTextColor="#666666"
-            onChangeText={(text) => setlname(text)}
-            autoCorrect={false}
-            value={lname}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
+
         <View style={styles.action}>
           <Feather name="phone" color={colors.text} size={20} />
           <TextInput
@@ -444,7 +444,7 @@ const EditProfile_Screen = ({ navigation }) => {
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator size="large" color={"#ffffff"} />
+            <ActivityIndicator size="small" color={"#ffffff"} />
           ) : (
             <Text style={styles.panelButtonTitle}>update</Text>
           )}

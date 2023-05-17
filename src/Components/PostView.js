@@ -120,7 +120,7 @@ const PostView = ({ data, postId, orgId, index, role }) => {
       <Animatable.View
         animation="fadeInUp"
         duration={1000}
-        delay={index * 110}
+        delay={index * 80}
         style={styles.post}
       >
         <View style={styles.postheader}>
